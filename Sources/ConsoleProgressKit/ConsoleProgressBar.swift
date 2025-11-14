@@ -10,81 +10,44 @@ import Foundation
 public final class ConsoleProgressBar {
     private let width: Int
     private let color: ConsoleColor
-    private let completionSymbol: String?
-    private let reset = ConsoleColor.reset.rawValue
-    private let clearLine = "\u{1B}[2K"
-    private let moveUp2 = "\u{1B}[2A"
     
+    private var current = 0
     private var firstUpdate = true
-    private var lastMessage: String?
-    private var maxBar: String
-    private var lastUpdateTime: CFAbsoluteTime = 0
-    private let minInterval: Double
     
-    public init(
-        width: Int = 50,
-        color: ConsoleColor = .green,
-        throttleInterval: Double = 0.05,
-        completionSymbol: String? = "✅"
-    ) {
+    public init(width: Int = 50, color: ConsoleColor = .green) {
         self.width = width
         self.color = color
-        self.minInterval = throttleInterval
-        self.completionSymbol = completionSymbol
-        self.maxBar = String(repeating: "█", count: width)
     }
 }
 
 
-// MARK: - Actions
-public extension ConsoleProgressBar {
-    func complete(message: String? = nil) {
-        let prefix: String
-        if let symbol = completionSymbol {
-            prefix = "\(color.rawValue)\(symbol) "
-        } else {
-            prefix = "\(color.rawValue)"
-        }
-
+// MARK: - PurgeProgressHandler
+extension ConsoleProgressBar {
+    public func complete(message: String? = nil) {
         if let message = message {
-            print("\n\(prefix)\(message)\(reset)")
+            print("\n\(color.rawValue)✅ \(message)\(ConsoleColor.reset.rawValue)")
         } else {
-            print("\n\(prefix)Completed.\(reset)")
+            print("\n\(color.rawValue)✅ Completed.\(ConsoleColor.reset.rawValue)")
         }
     }
 
-    func updateProgress(current: Int, total: Int, message: String) {
-        let now = CFAbsoluteTimeGetCurrent()
-        if now - lastUpdateTime < minInterval { return }
-        lastUpdateTime = now
-
+    public func updateProgress(current: Int, total: Int, message: String) {
+        self.current = current
+        let total = total
         let progress = Double(current) / Double(total)
-        let filledCount = Int(progress * Double(width))
-        let emptyCount = width - filledCount
+        let filled = Int(progress * Double(width))
+        let empty = width - filled
 
-        let filledBar = String(maxBar.prefix(filledCount))
-        let emptyBar = String(repeating: "-", count: emptyCount)
+        let filledBar = color.rawValue + String(repeating: "█", count: filled) + ConsoleColor.reset.rawValue
+        let emptyBar = String(repeating: "-", count: empty)
+        let bar = filledBar + emptyBar
+        let percent = "\(color.rawValue)\(String(format: "%.2f%%", progress * 100))\(ConsoleColor.reset.rawValue)"
 
-        let percentValue = Int(progress * 10000)
-        let percentText = "\(percentValue / 100).\(String(format: "%02d", percentValue % 100))%"
+        if !firstUpdate { print("\u{1B}[2A", terminator: "") }
+        else { firstUpdate = false }
 
-        let bar = "\(color.rawValue)\(filledBar)\(reset)\(emptyBar)"
-        let percentColored = "\(color.rawValue)\(percentText)\(reset)"
-
-        if !firstUpdate {
-            print(moveUp2, terminator: "")
-        } else {
-            firstUpdate = false
-        }
-
-        if lastMessage != message {
-            print("\(clearLine)\(message)")
-            lastMessage = message
-        } else {
-            print(clearLine)
-        }
-
-        print("\(clearLine)\(bar) \(percentColored)")
+        print("\u{1B}[2K\(message)")
+        print("\u{1B}[2K\(bar) \(percent)")
         fflush(stdout)
     }
 }
