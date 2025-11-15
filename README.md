@@ -1,37 +1,41 @@
 # ConsoleProgressKit
 
-[![Swift](https://img.shields.io/badge/Swift-6-purple)](https://swift.org)
-![Platform](https://img.shields.io/badge/platform-macOS-blue)
-![License](https://img.shields.io/badge/license-MIT-lightgray)
-
----
+![Swift](https://img.shields.io/badge/Swift-6.0+-orange.svg)
+![Platform](https://img.shields.io/badge/Platform-macOS-blueviolet.svg)
+![SPM](https://img.shields.io/badge/SPM-compatible-brightgreen.svg)
+![License](https://img.shields.io/badge/License-MIT-lightgrey.svg)
 
 ## Overview
 
-**ConsoleProgressKit** is a lightweight, colorized command-line progress bar for Swift applications. Designed for clarity and minimalism, it enhances CLI tools by providing a visual indicator of task progress with optional messages and detail lines.
-
----
+ConsoleProgressKit is a lightweight Swift Package Manager library providing colorized command-line progress bars for Swift CLI applications. It uses ANSI escape sequences for terminal manipulation and has zero external dependencies.
 
 ## Features
 
-- Customizable width and color
-- Clean ANSI-style progress bar
-- Multi-line updates with optional detail messages
-- Minimal dependencies (none)
+- **In-place progress updates** using ANSI escape sequences
+- **Colorized output** with customizable colors (green, yellow, blue, magenta, cyan)
+- **Dynamic display** supporting 2 or 3 line layouts with optional detail messages
+- **Stateful rendering** for smooth multi-line terminal updates
+- **Zero dependencies** - pure Swift implementation
+- **Simple API** - initialize, update, complete
 
----
+## Requirements
+
+- Swift 6.0+
+- macOS (relies on terminal ANSI support)
 
 ## Installation
 
 ### Swift Package Manager
 
-Add the following to your `Package.swift`:
+Add the package to your `Package.swift`:
 
 ```swift
-.package(url: "https://github.com/nikolainobadi/ConsoleProgressKit", from: "0.4.0")
+dependencies: [
+    .package(url: "https://github.com/nikolainobadi/ConsoleProgressKit", from: "1.0.0")
+]
 ```
 
-Then add `"ConsoleProgressKit"` as a dependency for your target:
+Then include it in your target:
 
 ```swift
 .target(
@@ -40,50 +44,86 @@ Then add `"ConsoleProgressKit"` as a dependency for your target:
 )
 ```
 
----
-
 ## Usage
 
 ```swift
 import ConsoleProgressKit
 
-let progressBar = ConsoleProgressBar(width: 40, color: .cyan)
+// Create a progress bar with custom width and color
+let progressBar = ConsoleProgressBar(width: 50, color: .green)
 
+// Update progress with a message
 for i in 1...100 {
     progressBar.updateProgress(
         current: i,
         total: 100,
-        message: "Processing items...",
-        detail: "Item \(i) of 100"
+        message: "Processing items..."
     )
-    usleep(50000) // Simulate work
+    // Your work here
 }
 
-progressBar.complete(message: "All tasks completed.")
+// Mark as complete
+progressBar.complete(message: "All items processed!")
 ```
 
----
+### With Optional Detail Line
 
-## Architecture Notes
+```swift
+let progressBar = ConsoleProgressBar(width: 50, color: .blue)
 
-- `ConsoleProgressBar` handles rendering and state management.
-- `ConsoleColor` is a simple enum for ANSI color codes.
-- Terminal output is updated in-place using escape sequences.
+for i in 1...files.count {
+    progressBar.updateProgress(
+        current: i,
+        total: files.count,
+        message: "Processing files...",
+        detail: "Current: \(files[i-1].name)"
+    )
+    // Process file
+}
 
----
+progressBar.complete(message: "File processing complete!")
+```
 
-## About This Project
+### Available Colors
 
-ConsoleProgressKit was built to streamline progress tracking for CLI Swift tools. It aims to provide an elegant, user-friendly way to visualize progress without external dependencies or heavy setup.
+The `ConsoleColor` enum provides:
+- `.green` (default)
+- `.yellow`
+- `.blue`
+- `.magenta`
+- `.cyan`
 
----
+## Architecture
 
-## Contributing
+### Core Components
 
-Contributions are welcome! Feel free to open issues or submit pull requests on [GitHub](https://github.com/nikolainobadi/ConsoleProgressKit).
+**ConsoleProgressBar**
+- Main public API for progress tracking
+- Manages terminal state and cursor positioning
+- Renders progress using ANSI escape sequences (`\u{1B}[2K` for line clearing, `\u{1B}[nA` for cursor movement)
+- Dynamically handles 2 or 3 line displays based on optional detail parameter
 
----
+**ConsoleColor**
+- Enum wrapping ANSI color codes
+- Provides color options for progress bar and text emphasis
+
+### Terminal Output Management
+
+Progress updates render in-place by:
+1. Moving cursor up to previous lines
+2. Clearing each line before writing new content
+3. Flushing stdout to ensure immediate display
 
 ## License
 
-This project is licensed under the MIT License. See [LICENSE](./LICENSE) for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
