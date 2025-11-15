@@ -1,6 +1,6 @@
 # ConsoleProgressKit
 
-[![Swift](https://img.shields.io/badge/Swift-6.1-purple)](https://swift.org)
+[![Swift](https://img.shields.io/badge/Swift-6-purple)](https://swift.org)
 ![Platform](https://img.shields.io/badge/platform-macOS-blue)
 ![License](https://img.shields.io/badge/license-MIT-lightgray)
 
