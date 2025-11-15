@@ -72,23 +72,6 @@ progressBar.complete(message: "All tasks completed.")
 
 ---
 
-## Documentation
-
-This project is documented via inline comments. For more detailed docs in future versions, see the [GitHub Wiki](https://github.com/nikolainobadi/ConsoleProgressKit/wiki) or consider a `Docs/` folder in later releases.
-
----
-
-## Acknowledgments
-
-ConsoleProgressKit uses:
-
-- ANSI escape codes for cursor control and coloring
-- `fflush(stdout)` to ensure timely terminal updates
-
-No third-party libraries are used.
-
----
-
 ## About This Project
 
 ConsoleProgressKit was built to streamline progress tracking for CLI Swift tools. It aims to provide an elegant, user-friendly way to visualize progress without external dependencies or heavy setup.
