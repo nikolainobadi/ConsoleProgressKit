@@ -1,6 +1,6 @@
 # ConsoleProgressKit
 
-[![Swift](https://img.shields.io/badge/Swift-5.9-orange)](https://swift.org)
+[![Swift](https://img.shields.io/badge/Swift-6.1-purple)](https://swift.org)
 [![Platform](https://img.shields.io/badge/Platform-macOS%20%7C%20Linux-lightgrey)]()
 [![License](https://img.shields.io/github/license/nikolainobadi/ConsoleProgressKit)](./LICENSE)
 [![Version](https://img.shields.io/badge/Version-0.3.0-blue)](https://github.com/nikolainobadi/ConsoleProgressKit)
