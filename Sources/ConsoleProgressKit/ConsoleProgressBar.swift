@@ -31,7 +31,7 @@ extension ConsoleProgressBar {
         }
     }
 
-    public func updateProgress(current: Int, total: Int, message: String) {
+    public func updateProgress(current: Int, total: Int, message: String, detail: String? = nil) {
         self.current = current
         let total = total
         let progress = Double(current) / Double(total)
@@ -43,11 +43,21 @@ extension ConsoleProgressBar {
         let bar = filledBar + emptyBar
         let percent = "\(color.rawValue)\(String(format: "%.2f%%", progress * 100))\(ConsoleColor.reset.rawValue)"
 
-        if !firstUpdate { print("\u{1B}[2A", terminator: "") }
-        else { firstUpdate = false }
+        // Clear previous lines based on whether we had a detail line
+        if !firstUpdate {
+            let linesToClear = detail != nil ? 3 : 2
+            print("\u{1B}[\(linesToClear)A", terminator: "")
+        } else {
+            firstUpdate = false
+        }
 
         print("\u{1B}[2K\(message)")
         print("\u{1B}[2K\(bar) \(percent)")
+
+        if let detail = detail {
+            print("\u{1B}[2K\(ConsoleColor.cyan.rawValue)  ↳ \(detail)\(ConsoleColor.reset.rawValue)")
+        }
+
         fflush(stdout)
     }
 }
