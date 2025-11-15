@@ -28,7 +28,7 @@
 Add the following to your `Package.swift`:
 
 ```swift
-.package(url: "https://github.com/nikolainobadi/ConsoleProgressKit", from: "0.3.0")
+.package(url: "https://github.com/nikolainobadi/ConsoleProgressKit", from: "0.4.0")
 ```
 
 Then add `"ConsoleProgressKit"` as a dependency for your target:
