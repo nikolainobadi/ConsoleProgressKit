@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**ConsoleProgressKit** is a lightweight Swift Package Manager (SPM) library providing colorized command-line progress bars for Swift CLI applications. It uses ANSI escape sequences for terminal manipulation and has zero external dependencies.
+**ConsoleProgressKit** is a lightweight Swift Package Manager (SPM) library providing activity tracking, live spinners and progress bars, and plain log output for Swift CLI applications. Progress goes to stderr; command results go to stdout. The library has zero external dependencies.
 
 ## Build & Test Commands
 
@@ -13,7 +13,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 swift build
 ```
 
-### Running tests (when added)
+### Running tests
 ```bash
 swift test
 ```
@@ -32,39 +32,38 @@ open Package.swift
 
 ### Core Components
 
-**ConsoleProgressBar** (`Sources/ConsoleProgressKit/ConsoleProgressBar.swift`)
-- Main public API for progress tracking
-- Manages terminal state (current position, first update flag)
-- Renders progress using ANSI escape sequences for in-place updates
-- Uses `\u{1B}[2K` to clear lines and `\u{1B}[nA` to move cursor up
-- Tracks `firstUpdate` to determine whether to clear previous output
-- Dynamically handles 2 or 3 line displays based on optional detail parameter
+**ProgressDisplay** (`Sources/ConsoleProgressKit/Shared/ProgressDisplay.swift`)
+- Shared public interface for tracking async operations, notes, prompt suspension, result output, and terminal restoration
+- `ActivityHandle` reports detail, waiting/running state, output lines, and numeric progress
 
-**ConsoleColor** (`Sources/ConsoleProgressKit/ConsoleColor.swift`)
-- Simple enum wrapping ANSI color codes
-- Provides color options: green, yellow, blue, magenta, cyan, reset
-- Used for progress bar coloring and text emphasis
+**LiveProgressDisplay** (`Sources/ConsoleProgressKit/Live/LiveProgressDisplay.swift`)
+- Animates running activities in a shared terminal region on stderr using a private timer queue
+- Stores `LiveDisplayState` transitions and writes their output under a `Mutex`
+- `RegionLayout` fits running activities to terminal dimensions; `TerminalScreen` handles erasing, redrawing, and cursor visibility
+
+**PlainProgressDisplay** (`Sources/ConsoleProgressKit/Plain/PlainProgressDisplay.swift`)
+- Writes activity starts, updates, and outcomes without animation or escape codes
+- Suitable for pipes, logs, and non-interactive callers
 
 ### Key Design Patterns
 
-1. **Terminal Output Management**: Progress updates are rendered in-place by:
-   - Moving cursor up to previous lines
-   - Clearing each line before writing new content
-   - Flushing stdout to ensure immediate display
+1. **Terminal Output Management**: Callers choose the live or plain display; `TerminalCapabilities.standardErrorIsTerminal` exposes stderr terminal detection. Progress and notes use stderr, while `writeOutput(_:)` writes results to stdout without disrupting the live region.
 
-2. **Stateful Rendering**: The bar tracks internal state (`current`, `firstUpdate`) to manage multi-line updates correctly across calls
+2. **Stateful Rendering**: Live activity updates change state and are drawn on the next timer tick. Finished activities and notes appear above the running region. `suspended(_:)` clears the region for synchronous prompts and redraws it afterward.
 
 3. **Public API Surface**:
-   - `init(width:color:)` - Configure bar appearance
-   - `updateProgress(current:total:message:detail:)` - Update display
-   - `complete(message:)` - Final completion state
+   - `LiveProgressDisplay()` / `PlainProgressDisplay()` - Create a display
+   - `track(_:operation:)` - Run an async operation with an `ActivityHandle`, report its outcome and elapsed time, return its value, and rethrow its errors
+   - `note(_:style:)` - Print a note
+   - `restoreTerminal()` - Permanently stop display output; subsequent tracked operations still execute
 
 ## Development Notes
 
 - Swift 6.2+ required (see Package.swift)
-- Platform: macOS (relies on terminal ANSI support)
-- No test target currently exists in Package.swift
-- Library product is the only build output
+- Platform: macOS 15+ (see Package.swift)
+- `ConsoleProgressKitTests` uses Swift Testing in `Tests/ConsoleProgressKitTests/`, with coverage for live state transitions and shared formatting helpers
+- The library target enables `NonisolatedNonsendingByDefault` to preserve caller isolation for async operations
+- The root package exports the library; `Demo/` is a separate package with the `progress-demo` executable and its own external dependencies
 
 ## Claude Code Skill
 

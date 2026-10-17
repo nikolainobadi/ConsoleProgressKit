@@ -7,21 +7,22 @@
 
 ## Overview
 
-ConsoleProgressKit is a lightweight Swift Package Manager library providing colorized command-line progress bars for Swift CLI applications. It uses ANSI escape sequences for terminal manipulation and has zero external dependencies.
+ConsoleProgressKit is a lightweight Swift Package Manager library providing activity tracking, spinners, and progress bars for Swift CLI applications. It offers an animated terminal display and plain output for logs and pipes, with zero external dependencies.
 
 ## Features
 
-- **In-place progress updates** using ANSI escape sequences
-- **Colorized output** with customizable colors (green, yellow, blue, magenta, cyan)
-- **Dynamic display** supporting 2 or 3 line layouts with optional detail messages
-- **Stateful rendering** for smooth multi-line terminal updates
+- **In-place activity updates** with animated spinners and progress bars
+- **Concurrent activities** with individual details, waiting states, and output tails
+- **Automatic outcomes** showing success or failure and elapsed time
+- **Plain output** without animation or escape codes for logs and pipes
+- **Separate output streams** - progress on stderr and command results on stdout
 - **Zero dependencies** - pure Swift implementation
-- **Simple API** - initialize, update, complete
+- **Simple API** - track an operation and report updates through its activity handle
 
 ## Requirements
 
 - Swift 6.2+
-- macOS (relies on terminal ANSI support)
+- macOS 15+ (the live display requires terminal ANSI support)
 
 ## Installation
 
@@ -30,7 +31,7 @@ ConsoleProgressKit is a lightweight Swift Package Manager library providing colo
 Add the package to your `Package.swift`:
 
 ```swift
-.package(url: "https://github.com/nikolainobadi/ConsoleProgressKit", from: "0.4.0")
+.package(url: "https://github.com/nikolainobadi/ConsoleProgressKit", from: "0.5.0")
 ```
 
 Then include it in your target:
@@ -44,73 +45,80 @@ Then include it in your target:
 
 ## Usage
 
+Choose a display based on whether stderr is attached to a terminal. Run `track` from an async throwing context:
+
 ```swift
 import ConsoleProgressKit
 
-// Create a progress bar with custom width and color
-let progressBar = ConsoleProgressBar(width: 50, color: .green)
+let display: any ProgressDisplay = TerminalCapabilities.standardErrorIsTerminal
+    ? LiveProgressDisplay()
+    : PlainProgressDisplay()
 
-// Update progress with a message
-for i in 1...100 {
-    progressBar.updateProgress(
-        current: i,
-        total: 100,
-        message: "Processing items..."
-    )
-    // Your work here
+try await display.track("Processing items") { activity in
+    for i in 1...100 {
+        // Your work here
+        activity.progress(completed: i, total: 100)
+    }
 }
 
-// Mark as complete
-progressBar.complete(message: "All items processed!")
+display.writeOutput("All items processed!")
 ```
+
+`track` returns the operation's result and automatically reports success or failure with elapsed time. Errors thrown by the operation are rethrown unchanged.
 
 ### With Optional Detail Line
 
-```swift
-let progressBar = ConsoleProgressBar(width: 50, color: .blue)
+Using the same `display`, report the current item and any activity output:
 
-for i in 1...files.count {
-    progressBar.updateProgress(
-        current: i,
-        total: files.count,
-        message: "Processing files...",
-        detail: "Current: \(files[i-1].name)"
-    )
-    // Process file
+```swift
+let files = ["first.txt", "second.txt"]
+
+try await display.track("Processing files") { activity in
+    for (index, file) in files.enumerated() {
+        activity.update(detail: "Current: \(file)")
+        // Process file
+        activity.output(line: "Processed \(file)")
+        activity.progress(completed: index + 1, total: files.count)
+    }
 }
 
-progressBar.complete(message: "File processing complete!")
+display.writeOutput("File processing complete!")
 ```
 
-### Available Colors
+Details are omitted from the finished activity line. The live display shows recent output beneath running activities and more output if an activity fails; the plain display prints every output line. Use `markWaiting()` and `markRunning()` on the activity handle to indicate queued work.
 
-The `ConsoleColor` enum provides:
-- `.green` (default)
-- `.yellow`
-- `.blue`
-- `.magenta`
-- `.cyan`
+### Notes and Terminal Interaction
+
+Use `display.note("Message", style: .info)` for informational notes or `.warning` for warnings. The live display uses colors for outcomes and warnings; the plain display emits no escape codes.
+
+Wrap synchronous prompts in `display.suspended { ... }` to clear running activities while reading input, then redraw them. Use `writeOutput(_:)` for command results on stdout while progress remains on stderr.
+
+Call `restoreTerminal()` when ending early to erase running activities, reset colors, and show the cursor. This permanently stops display output; it does not cancel the tracked operations.
 
 ## Architecture
 
 ### Core Components
 
-**ConsoleProgressBar**
-- Main public API for progress tracking
-- Manages terminal state and cursor positioning
-- Renders progress using ANSI escape sequences (`\u{1B}[2K` for line clearing, `\u{1B}[nA` for cursor movement)
-- Dynamically handles 2 or 3 line displays based on optional detail parameter
+**ProgressDisplay**
+- Common public API for tracking operations, notes, prompts, command output, and terminal restoration
+- Implemented by `LiveProgressDisplay` and `PlainProgressDisplay`
 
-**ConsoleColor**
-- Enum wrapping ANSI color codes
-- Provides color options for progress bar and text emphasis
+**ActivityHandle**
+- Reports details, progress counts, waiting states, and activity output
+- Passed to each operation by `track`
+
+**TerminalCapabilities**
+- Reports whether stderr is a terminal and its available dimensions
+- Lets callers select the appropriate display
 
 ### Terminal Output Management
 
-Progress updates render in-place by:
-1. Moving cursor up to previous lines
-2. Clearing each line before writing new content
-3. Flushing stdout to ensure immediate display
+The live display keeps running activities in a shared region on stderr:
+1. A timer redraws spinners and activity updates in place using ANSI escape sequences
+2. Finished activities and notes appear above the running region
+3. Lines fit the terminal width, and output tails or activities collapse when space is limited
+
+The plain display writes activity starts, updates, and outcomes to stderr without animation. Both displays write command results to stdout through `writeOutput(_:)`.
 
 ## License
 

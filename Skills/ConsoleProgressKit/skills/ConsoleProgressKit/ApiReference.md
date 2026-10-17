@@ -33,7 +33,7 @@ public protocol ProgressDisplay: Sendable
 | `note(_ text: String, style: NoteStyle)` | `Void` | Prints `text` as its own line, marked by `style`, above any activity that is still running. |
 | `suspended<T>(_ body: () throws -> T) rethrows -> T` | `T` | Clears running activities from the screen while `body` runs, then redraws them. Wrap prompts and other user input. |
 | `writeOutput(_ text: String)` | `Void` | Writes `text` and a newline to stdout without breaking up running activities. Use for a command's results. |
-| `restoreTerminal()` | `Void` | Erases running activities, resets colors, shows the cursor, then stops drawing for good. Every later call does nothing. |
+| `restoreTerminal()` | `Void` | Stops display output for good; the live display also erases running activities, resets colors, and shows the cursor. Later `track` operations and `suspended` bodies still execute, returning values or throwing errors, but the display writes nothing. |
 
 ### Usage Example
 
@@ -78,7 +78,7 @@ do {
 | Meant for | Interactive terminals | Pipes, files, CI logs, non-interactive callers |
 | Activity start | Spinner line in a region redrawn in place | `Title...` line |
 | `update(detail:)` | Replaces `— detail` on the running line | New `Title — detail` line per non-nil detail; `nil` prints nothing |
-| `markWaiting()` / `markRunning()` | Dim `◦ Title (waiting)` line, no spinner | `Title — waiting` / `Title — started` lines |
+| `markWaiting()` / `markRunning()` | Dim `◦ Title (waiting)` line while waiting; spinner returns when running | `Title — waiting` / `Title — started` lines |
 | `output(line:)` | Last 5 lines dimmed under the activity; last 20 printed under ✗ on failure; dropped on success | Every line printed immediately, raw, no title prefix |
 | `progress(completed:total:)` | 20-cell `█░` bar plus `c/t`, clamped (total of at least 1) | `Title — c/t`, raw numbers |
 | `note(_:style:)` | Above the region, `!` in yellow for warnings; held while suspended | In order, uncolored |
@@ -143,8 +143,8 @@ try await withThrowingTaskGroup(of: Void.self) { group in
 
 The size is read from stderr on every draw (`TerminalCapabilities.standardErrorSize`):
 
-- Each region line is cut to `width - 1` visible characters, ending with `…` and a style reset. Escape codes don't count toward the width. Every character counts as one column, so emoji and other wide characters can still overflow.
-- The region uses at most `height - 1` lines. When it is too tall, output tails are dropped first; if the titles still don't fit, the last activities collapse into a dim `… and N more` line.
+- Region lines longer than `max(width - 1, 1)` visible characters are cut to that limit, ending with `…` and a style reset. Escape codes don't count toward the width. Every character counts as one column, so emoji and other wide characters can still overflow.
+- The region uses at most `max(height - 1, 1)` lines. When it is too tall, output tails are dropped first; if the titles still don't fit, the last activities collapse into a dim `… and N more` line.
 - Notes and finished lines above the region are not cut.
 - When the size can't be read (not a terminal), nothing is cut or collapsed.
 
@@ -163,7 +163,7 @@ Spinner frames cycle through `⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏`. The cursor is hid
 
 ### Suspension and Stopping
 
-- While suspended, nothing is drawn; lines finished and notes printed in the meantime are held and printed in order on resume.
+- While suspended, the live region is not drawn; finished lines and notes are held and printed in order on resume. `writeOutput(_:)` still writes to stdout immediately.
 - `suspended(_:)` is not meant to be nested: the inner call's resume ends the outer suspension.
 - After `restoreTerminal()`, every method writes nothing, including `writeOutput`, and held lines are discarded. Activities still run, and `track` still returns their values or throws their errors.
 <!-- /type:LiveProgressDisplay -->
@@ -383,6 +383,6 @@ Its initializer is not public; values come from `TerminalCapabilities.standardEr
 - **Only report through the handle you were given** — `ActivityHandle` has no public initializer; keep it inside the `operation` closure, or pass it down to the functions that do the work.
 - **Use `update(detail:)` for "what's happening now", `output(line:)` for logs** — Details replace each other and vanish from the finished line; output lines are kept so a failure shows them.
 - **Report progress with the final count** — Call `progress(completed: total, total: total)` at the end, or the live bar stops one step short.
-- **Pair `markWaiting()` with `markRunning()`** — A waiting activity shows no spinner, detail, progress, or output until it is marked running again.
+- **Pair `markWaiting()` with `markRunning()`** — In the live display, a waiting activity hides its spinner, detail, progress, and output tail until it is marked running again. The plain display continues printing updates while waiting.
 - **Check `standardErrorIsTerminal`, not stdout** — Progress is drawn on stderr, so stdout being piped doesn't mean the live display is wrong.
 - **Expect `standardErrorSize` to be `nil` in CI** — It needs a real terminal; code that uses it must handle `nil`.
