@@ -5,6 +5,9 @@ import PackageDescription
 
 let package = Package(
     name: "ConsoleProgressKit",
+    platforms: [
+        .macOS(.v15)
+    ],
     products: [
         .library(
             name: "ConsoleProgressKit",
