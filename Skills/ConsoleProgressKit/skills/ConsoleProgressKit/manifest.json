@@ -1,0 +1,79 @@
+{
+  "manifestVersion": 1,
+  "skillName": "ConsoleProgressKit",
+  "packagePath": "/Users/nelixpro/Desktop/ConsoleProgressKit",
+  "git": {
+    "sha": "c0c65e9adf423b960898b4db02ac1268a15a90b9",
+    "tag": "v0.4.0"
+  },
+  "scannedAt": "2026-10-17T15:46:59+00:00",
+  "files": {
+    "Sources/ConsoleProgressKit/Live/LiveDisplayState.swift": "ab6a3deff11e6389fdb8d905315270a8472605dd9dff7f06e10d670dc2f73e15",
+    "Sources/ConsoleProgressKit/Live/LiveProgressDisplay.swift": "e3206f6e21f03688fef9ca2af8126313a7a9545eaf866b0a9718bec338060515",
+    "Sources/ConsoleProgressKit/Live/RegionLayout.swift": "7fa14033402b9746c44af5ebfe80efe54b34484105a4535034778b020eacf996",
+    "Sources/ConsoleProgressKit/Live/RunningActivity.swift": "c41251f5e258ee4d08d240bdfa7cee1d2c38de66b8aa0c2859ef9ecd2614373d",
+    "Sources/ConsoleProgressKit/Live/TerminalScreen.swift": "4f2f6c919f71a86a0782b6b9da6be16526106d83a3768d521250f5adc24d7d50",
+    "Sources/ConsoleProgressKit/Plain/PlainProgressDisplay.swift": "8215ecea3052b58a5964adcee8950fd7dfb63c8b1e0178f47dbb63baeb872363",
+    "Sources/ConsoleProgressKit/Shared/ActivityHandle.swift": "f0b8f7e501f4bb93adf2e7722ffc6c67cab492fa63065e911f907fe7fba2a1b7",
+    "Sources/ConsoleProgressKit/Shared/ActivityLine.swift": "9f010f0f8679783679ad31eaf350253d4a2551fc79744393cba8fdef4a3ae17d",
+    "Sources/ConsoleProgressKit/Shared/ActivityUpdate.swift": "5905577033e01cf3a00a4c08e9cc9612eef39f855594788141e6e78a14a072c1",
+    "Sources/ConsoleProgressKit/Shared/DetailLine.swift": "ffcfd5dd24bf3c3132e5b6ef1242262b534ed74d6767842e82880c9baf3b86a9",
+    "Sources/ConsoleProgressKit/Shared/LineFitter.swift": "670312cda0aa899470b0d378cd85615067b3a00d1c2ce3271273ffe55e9ed5b3",
+    "Sources/ConsoleProgressKit/Shared/NoteLine.swift": "f4672de63fe775eb218f932fc65f3740cb64dcfd959327033a0e87b5427524eb",
+    "Sources/ConsoleProgressKit/Shared/NoteStyle.swift": "fa114541180835bf211bff3277d3172b3692dfef936742ccc63c0b603def89e4",
+    "Sources/ConsoleProgressKit/Shared/ProgressBar.swift": "de355cd711ce16b6b24e35f3dc40dde7816da3ec30f79d45d722004559e58f50",
+    "Sources/ConsoleProgressKit/Shared/ProgressDisplay.swift": "560f2046f631d9ab9f4272a099d7a1ec8cd6ff08acef843e2e53d55adaec0307",
+    "Sources/ConsoleProgressKit/Shared/StandardStream.swift": "86f4a2fc6766d19dac1243d9ef2054ec4328723f7bd04804b35ea7dd78610424",
+    "Sources/ConsoleProgressKit/Shared/TerminalCapabilities.swift": "cc6edc6c5e03aecff0d38127e9f7a1418903907ca9b81af774a349aaacca1fe9",
+    "Sources/ConsoleProgressKit/Shared/TerminalStyle.swift": "6955727c4f7d6cb3ca0031388cb0df5670897353ce6071f725e8b540147b0231",
+    "Sources/ConsoleProgressKit/Shared/TimedActivity.swift": "8ecff60a7289b43d1d5906c346cf6158058d45c0da117a1371d83d45a61a03fd"
+  },
+  "types": {
+    "ProgressDisplay": {
+      "file": "Sources/ConsoleProgressKit/Shared/ProgressDisplay.swift",
+      "doc": "ApiReference.md",
+      "anchor": "ProgressDisplay",
+      "conforms": []
+    },
+    "LiveProgressDisplay": {
+      "file": "Sources/ConsoleProgressKit/Live/LiveProgressDisplay.swift",
+      "doc": "ApiReference.md",
+      "anchor": "LiveProgressDisplay",
+      "conforms": [
+        "ProgressDisplay"
+      ]
+    },
+    "PlainProgressDisplay": {
+      "file": "Sources/ConsoleProgressKit/Plain/PlainProgressDisplay.swift",
+      "doc": "ApiReference.md",
+      "anchor": "PlainProgressDisplay",
+      "conforms": [
+        "ProgressDisplay"
+      ]
+    },
+    "ActivityHandle": {
+      "file": "Sources/ConsoleProgressKit/Shared/ActivityHandle.swift",
+      "doc": "ApiReference.md",
+      "anchor": "ActivityHandle",
+      "conforms": []
+    },
+    "NoteStyle": {
+      "file": "Sources/ConsoleProgressKit/Shared/NoteStyle.swift",
+      "doc": "ApiReference.md",
+      "anchor": "NoteStyle",
+      "conforms": []
+    },
+    "TerminalCapabilities": {
+      "file": "Sources/ConsoleProgressKit/Shared/TerminalCapabilities.swift",
+      "doc": "ApiReference.md",
+      "anchor": "TerminalCapabilities",
+      "conforms": []
+    },
+    "TerminalSize": {
+      "file": "Sources/ConsoleProgressKit/Shared/TerminalCapabilities.swift",
+      "doc": "ApiReference.md",
+      "anchor": "TerminalSize",
+      "conforms": []
+    }
+  }
+}

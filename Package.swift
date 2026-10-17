@@ -1,10 +1,13 @@
-// swift-tools-version: 6.0
+// swift-tools-version: 6.2
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
 
 let package = Package(
     name: "ConsoleProgressKit",
+    platforms: [
+        .macOS(.v15)
+    ],
     products: [
         .library(
             name: "ConsoleProgressKit",
@@ -12,7 +15,16 @@ let package = Package(
     ],
     targets: [
         .target(
-            name: "ConsoleProgressKit"),
-
+            name: "ConsoleProgressKit",
+            swiftSettings: [
+                .enableUpcomingFeature("NonisolatedNonsendingByDefault")
+            ]
+        ),
+        .testTarget(
+            name: "ConsoleProgressKitTests",
+            dependencies: [
+                "ConsoleProgressKit"
+            ]
+        ),
     ]
 )
