@@ -13,7 +13,7 @@ public protocol ProgressDisplay: Sendable {
     ///
     /// `operation` receives a handle for reporting what it is doing while it runs. Errors thrown by
     /// `operation` are rethrown unchanged after the failure is shown.
-    func track<T>(_ title: String, operation: (ActivityHandle) async throws -> T) async throws -> T
+    nonisolated(nonsending) func track<T>(_ title: String, operation: nonisolated(nonsending) (ActivityHandle) async throws -> T) async throws -> T
 
     /// Prints `text` as its own line, marked by `style`, above any activity that is still running.
     func note(_ text: String, style: NoteStyle)

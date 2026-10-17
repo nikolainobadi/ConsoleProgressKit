@@ -15,7 +15,7 @@ public struct PlainProgressDisplay {
 
 // MARK: - ProgressDisplay
 extension PlainProgressDisplay: ProgressDisplay {
-    public func track<T>(_ title: String, operation: (ActivityHandle) async throws -> T) async throws -> T {
+    public nonisolated(nonsending) func track<T>(_ title: String, operation: nonisolated(nonsending) (ActivityHandle) async throws -> T) async throws -> T {
         let handle = ActivityHandle(send: { update in
             Self.write(update, title: title)
         })
