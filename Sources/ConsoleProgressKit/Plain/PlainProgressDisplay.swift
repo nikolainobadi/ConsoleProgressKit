@@ -21,7 +21,7 @@ public final class PlainProgressDisplay: Sendable {
 
 // MARK: - ProgressDisplay
 extension PlainProgressDisplay: ProgressDisplay {
-    public nonisolated(nonsending) func track<T>(_ title: String, operation: nonisolated(nonsending) (ActivityHandle) async throws -> T) async throws -> T {
+    public func track<T>(_ title: String, operation: (ActivityHandle) async throws -> T) async throws -> T {
         let handle = ActivityHandle(send: { [weak self] update in
             self?.write(update, title: title)
         })

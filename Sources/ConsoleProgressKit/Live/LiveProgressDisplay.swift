@@ -39,7 +39,7 @@ public final class LiveProgressDisplay: Sendable {
 
 // MARK: - ProgressDisplay
 extension LiveProgressDisplay: ProgressDisplay {
-    public nonisolated(nonsending) func track<T>(_ title: String, operation: nonisolated(nonsending) (ActivityHandle) async throws -> T) async throws -> T {
+    public func track<T>(_ title: String, operation: (ActivityHandle) async throws -> T) async throws -> T {
         let id = UUID()
         let handle = ActivityHandle(send: { [weak self] update in
             self?.perform { $0.updating(update, id: id) }

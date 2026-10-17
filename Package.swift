@@ -15,7 +15,11 @@ let package = Package(
     ],
     targets: [
         .target(
-            name: "ConsoleProgressKit"),
+            name: "ConsoleProgressKit",
+            swiftSettings: [
+                .enableUpcomingFeature("NonisolatedNonsendingByDefault")
+            ]
+        ),
 
     ]
 )
