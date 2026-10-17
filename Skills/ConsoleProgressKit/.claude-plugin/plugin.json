@@ -1,0 +1,5 @@
+{
+  "name": "ConsoleProgressKit",
+  "description": "ConsoleProgressKit Swift API reference for showing progress in command-line tools — live spinners, progress bars, and plain log lines on stderr. USE WHEN using ConsoleProgressKit, ProgressDisplay, LiveProgressDisplay, PlainProgressDisplay, ActivityHandle, track(_:operation:), NoteStyle, TerminalCapabilities, OR adding spinners, progress bars, or progress output to a Swift CLI.",
+  "author": { "name": "Nikolai Nobadi" }
+}
