@@ -61,7 +61,7 @@ open Package.swift
 
 ## Development Notes
 
-- Swift 6.0+ required (see Package.swift)
+- Swift 6.2+ required (see Package.swift)
 - Platform: macOS (relies on terminal ANSI support)
 - No test target currently exists in Package.swift
 - Library product is the only build output
