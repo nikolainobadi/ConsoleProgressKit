@@ -5,10 +5,16 @@
 //  Created by Nikolai Nobadi on 10/16/26.
 //
 
+import Synchronization
+
 /// Writes one line when an activity starts, one per detail update, and one when it finishes, with
 /// no animation or escape codes, for pipes, logs, and non-interactive callers.
-public struct PlainProgressDisplay {
+///
+/// Once the terminal is restored, the display writes nothing more; activities still run and finish
+/// unseen.
+public final class PlainProgressDisplay: Sendable {
     private let clock = ContinuousClock()
+    private let isStopped = Mutex(false)
 
     public init() { }
 }
@@ -16,11 +22,11 @@ public struct PlainProgressDisplay {
 // MARK: - ProgressDisplay
 extension PlainProgressDisplay: ProgressDisplay {
     public nonisolated(nonsending) func track<T>(_ title: String, operation: nonisolated(nonsending) (ActivityHandle) async throws -> T) async throws -> T {
-        let handle = ActivityHandle(send: { update in
-            Self.write(update, title: title)
+        let handle = ActivityHandle(send: { [weak self] update in
+            self?.write(update, title: title)
         })
 
-        StandardStream.error.write("\(title)...\n")
+        write("\(title)...\n", to: .error)
 
         return try await TimedActivity.run(clock: clock, operation: { try await operation(handle) }, finish: { succeeded, elapsed in
             finish(title: title, succeeded: succeeded, elapsed: elapsed)
@@ -28,7 +34,7 @@ extension PlainProgressDisplay: ProgressDisplay {
     }
 
     public func note(_ text: String, style: NoteStyle) {
-        StandardStream.error.write(NoteLine.make(text: text, style: style, colorsAreEnabled: false) + "\n")
+        write(NoteLine.make(text: text, style: style, colorsAreEnabled: false) + "\n", to: .error)
     }
 
     public func suspended<T>(_ body: () throws -> T) rethrows -> T {
@@ -36,15 +42,28 @@ extension PlainProgressDisplay: ProgressDisplay {
     }
 
     public func writeOutput(_ text: String) {
-        StandardStream.output.write(text + "\n")
+        write(text + "\n", to: .output)
     }
 
-    public func restoreTerminal() { }
+    public func restoreTerminal() {
+        isStopped.withLock { $0 = true }
+    }
 }
 
 // MARK: - Private Methods
 private extension PlainProgressDisplay {
-    static func write(_ update: ActivityUpdate, title: String) {
+    /// Writes `text` unless the terminal has been restored, holding the lock so nothing is written after.
+    func write(_ text: String, to stream: StandardStream) {
+        isStopped.withLock { isStopped in
+            guard !isStopped else {
+                return
+            }
+
+            stream.write(text)
+        }
+    }
+
+    func write(_ update: ActivityUpdate, title: String) {
         switch update {
         case .detail(let detail):
             if let detail {
@@ -53,17 +72,17 @@ private extension PlainProgressDisplay {
         case .waiting(let isWaiting):
             writeDetail(isWaiting ? "waiting" : "started", title: title)
         case .output(let line):
-            StandardStream.error.write(line + "\n")
+            write(line + "\n", to: .error)
         case .progress(let completed, let total):
             writeDetail("\(completed)/\(total)", title: title)
         }
     }
 
-    static func writeDetail(_ detail: String, title: String) {
-        StandardStream.error.write(DetailLine.make(title: title, detail: detail) + "\n")
+    func writeDetail(_ detail: String, title: String) {
+        write(DetailLine.make(title: title, detail: detail) + "\n", to: .error)
     }
 
     func finish(title: String, succeeded: Bool, elapsed: Duration) {
-        StandardStream.error.write(ActivityLine.finished(title: title, succeeded: succeeded, elapsed: elapsed, colorsAreEnabled: false) + "\n")
+        write(ActivityLine.finished(title: title, succeeded: succeeded, elapsed: elapsed, colorsAreEnabled: false) + "\n", to: .error)
     }
 }
