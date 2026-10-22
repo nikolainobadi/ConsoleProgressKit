@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-10-21
+
+### Added
+- Add the `ConsoleProgressTesting` library product with `MockProgressDisplay` for testing code that uses `ProgressDisplay` without terminal output; add the product to your test target's dependencies
+- Record activity titles, ordered handle updates, success or failure outcomes, notes, output text, prompt suspension counts, and terminal restoration calls for assertions, while preserving tracked operations' return values and thrown errors
+
 ## [0.5.0] - 2026-10-17
 
 ### Added
@@ -34,6 +40,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add `ConsoleColor` with green, yellow, blue, magenta, and cyan options
 - Require Swift 6.0
 
-[Unreleased]: https://github.com/nikolainobadi/ConsoleProgressKit/compare/v0.5.0...HEAD
+[Unreleased]: https://github.com/nikolainobadi/ConsoleProgressKit/compare/0.6.0...HEAD
+[0.6.0]: https://github.com/nikolainobadi/ConsoleProgressKit/compare/0.5.0...0.6.0
 [0.5.0]: https://github.com/nikolainobadi/ConsoleProgressKit/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/nikolainobadi/ConsoleProgressKit/releases/tag/v0.4.0

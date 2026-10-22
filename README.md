@@ -18,6 +18,7 @@ ConsoleProgressKit is a lightweight Swift Package Manager library providing acti
 - **Separate output streams** - progress on stderr and command results on stdout
 - **Zero dependencies** - pure Swift implementation
 - **Simple API** - track an operation and report updates through its activity handle
+- **Testing support** - record activities, updates, and outcomes with `MockProgressDisplay`
 
 ## Requirements
 
@@ -31,7 +32,7 @@ ConsoleProgressKit is a lightweight Swift Package Manager library providing acti
 Add the package to your `Package.swift`:
 
 ```swift
-.package(url: "https://github.com/nikolainobadi/ConsoleProgressKit", from: "0.5.0")
+.package(url: "https://github.com/nikolainobadi/ConsoleProgressKit", from: "0.6.0")
 ```
 
 Then include it in your target:
@@ -135,7 +136,7 @@ The mock also records notes, `writeOutput(_:)` text, prompt suspensions, and whe
 
 **ProgressDisplay**
 - Common public API for tracking operations, notes, prompts, command output, and terminal restoration
-- Implemented by `LiveProgressDisplay` and `PlainProgressDisplay`
+- Implemented by `LiveProgressDisplay`, `PlainProgressDisplay`, and `MockProgressDisplay` (in `ConsoleProgressTesting`)
 
 **ActivityHandle**
 - Reports details, progress counts, waiting states, and activity output

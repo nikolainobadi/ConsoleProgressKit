@@ -7,7 +7,7 @@ description: ConsoleProgressKit Swift API reference for showing progress in comm
 
 Shows what a long-running Swift command is doing: animated spinner lines on an interactive terminal, or plain one-line-per-event output for pipes and CI, always on stderr so stdout stays clean.
 
-**Dependency:** `.package(url: "https://github.com/nikolainobadi/ConsoleProgressKit", from: "0.5.0")`
+**Dependency:** `.package(url: "https://github.com/nikolainobadi/ConsoleProgressKit", from: "0.6.0")`
 **Products:** `ConsoleProgressKit` (production), `ConsoleProgressTesting` (test helpers, 0.6.0+)
 **Platforms:** macOS 15+ | **Swift:** 6.2+
 <!-- package_path: /Users/nelixpro/Desktop/ConsoleProgressKit -->

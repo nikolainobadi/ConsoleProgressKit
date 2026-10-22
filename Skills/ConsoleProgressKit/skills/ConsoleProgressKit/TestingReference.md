@@ -51,7 +51,7 @@ All read-only.
 | `activities` | `[RecordedActivity]` | One per `track(_:operation:)` call, in the order they started. |
 | `trackedTitles` | `[String]` | The titles of `activities`, in the order they started. |
 | `notes` | `[RecordedNote]` | Every `note(_:style:)` call, in order. |
-| `writtenOutput` | `[String]` | Every `writeOutput(_:)` text, in order, without the trailing newline. |
+| `writtenOutput` | `[String]` | Every `writeOutput(_:)` text exactly as supplied, in order. No newline is added or removed. |
 | `suspensionCount` | `Int` | How many times `suspended(_:)` ran its body. |
 | `terminalWasRestored` | `Bool` | Whether `restoreTerminal()` was called. |
 

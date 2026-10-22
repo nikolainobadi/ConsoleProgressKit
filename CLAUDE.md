@@ -48,6 +48,7 @@ open Package.swift
 **MockProgressDisplay** (`Sources/ConsoleProgressTesting/MockProgressDisplay.swift`)
 - Ships in the separate `ConsoleProgressTesting` product, which re-exports `ConsoleProgressKit`
 - Writes nothing; records activities (title, `RecordedUpdate`s, `RecordedOutcome`), notes, written output, suspensions, and terminal restoration
+- Runs tracked operations and passes through their values and errors; recording continues after `restoreTerminal()`
 - Creates working handles through `ActivityHandle`'s `package` initializer, so the handle stays without a public initializer
 
 ### Key Design Patterns
@@ -60,7 +61,7 @@ open Package.swift
    - `LiveProgressDisplay()` / `PlainProgressDisplay()` - Create a display
    - `track(_:operation:)` - Run an async operation with an `ActivityHandle`, report its outcome and elapsed time, return its value, and rethrow its errors
    - `note(_:style:)` - Print a note
-   - `restoreTerminal()` - Permanently stop display output; subsequent tracked operations still execute
+   - `restoreTerminal()` - Permanently stop live/plain display output; subsequent tracked operations still execute. The mock records the call without stopping recording
    - `MockProgressDisplay()` (`ConsoleProgressTesting`) - Record what code reports, for tests
 
 ## Development Notes
