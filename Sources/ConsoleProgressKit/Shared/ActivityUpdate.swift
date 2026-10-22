@@ -5,7 +5,7 @@
 //  Created by Nikolai Nobadi on 10/16/26.
 //
 
-enum ActivityUpdate: Sendable {
+package enum ActivityUpdate: Sendable {
     case detail(String?)
     case waiting(Bool)
     case output(String)

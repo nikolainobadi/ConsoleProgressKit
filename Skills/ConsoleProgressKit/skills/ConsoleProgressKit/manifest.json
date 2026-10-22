@@ -3,10 +3,10 @@
   "skillName": "ConsoleProgressKit",
   "packagePath": "/Users/nelixpro/Desktop/ConsoleProgressKit",
   "git": {
-    "sha": "c0c65e9adf423b960898b4db02ac1268a15a90b9",
-    "tag": "v0.4.0"
+    "sha": "68ca567e9adb4f80733d8e6ffc5a57dccf9c4a56",
+    "tag": "0.5.0"
   },
-  "scannedAt": "2026-10-17T15:46:59+00:00",
+  "scannedAt": "2026-10-21T15:29:34+00:00",
   "files": {
     "Sources/ConsoleProgressKit/Live/LiveDisplayState.swift": "ab6a3deff11e6389fdb8d905315270a8472605dd9dff7f06e10d670dc2f73e15",
     "Sources/ConsoleProgressKit/Live/LiveProgressDisplay.swift": "e3206f6e21f03688fef9ca2af8126313a7a9545eaf866b0a9718bec338060515",
@@ -14,9 +14,9 @@
     "Sources/ConsoleProgressKit/Live/RunningActivity.swift": "c41251f5e258ee4d08d240bdfa7cee1d2c38de66b8aa0c2859ef9ecd2614373d",
     "Sources/ConsoleProgressKit/Live/TerminalScreen.swift": "4f2f6c919f71a86a0782b6b9da6be16526106d83a3768d521250f5adc24d7d50",
     "Sources/ConsoleProgressKit/Plain/PlainProgressDisplay.swift": "8215ecea3052b58a5964adcee8950fd7dfb63c8b1e0178f47dbb63baeb872363",
-    "Sources/ConsoleProgressKit/Shared/ActivityHandle.swift": "f0b8f7e501f4bb93adf2e7722ffc6c67cab492fa63065e911f907fe7fba2a1b7",
+    "Sources/ConsoleProgressKit/Shared/ActivityHandle.swift": "fb4ed5592403fc8d2e39a46bdde76139afc6a05911ee7f3bb2c7d36e7d23ef39",
     "Sources/ConsoleProgressKit/Shared/ActivityLine.swift": "9f010f0f8679783679ad31eaf350253d4a2551fc79744393cba8fdef4a3ae17d",
-    "Sources/ConsoleProgressKit/Shared/ActivityUpdate.swift": "5905577033e01cf3a00a4c08e9cc9612eef39f855594788141e6e78a14a072c1",
+    "Sources/ConsoleProgressKit/Shared/ActivityUpdate.swift": "302a9627092bb8d0ad01c68312521367a85f3888ed2aac58fcf5c054160bc6de",
     "Sources/ConsoleProgressKit/Shared/DetailLine.swift": "ffcfd5dd24bf3c3132e5b6ef1242262b534ed74d6767842e82880c9baf3b86a9",
     "Sources/ConsoleProgressKit/Shared/LineFitter.swift": "670312cda0aa899470b0d378cd85615067b3a00d1c2ce3271273ffe55e9ed5b3",
     "Sources/ConsoleProgressKit/Shared/NoteLine.swift": "f4672de63fe775eb218f932fc65f3740cb64dcfd959327033a0e87b5427524eb",
@@ -26,7 +26,13 @@
     "Sources/ConsoleProgressKit/Shared/StandardStream.swift": "86f4a2fc6766d19dac1243d9ef2054ec4328723f7bd04804b35ea7dd78610424",
     "Sources/ConsoleProgressKit/Shared/TerminalCapabilities.swift": "cc6edc6c5e03aecff0d38127e9f7a1418903907ca9b81af774a349aaacca1fe9",
     "Sources/ConsoleProgressKit/Shared/TerminalStyle.swift": "6955727c4f7d6cb3ca0031388cb0df5670897353ce6071f725e8b540147b0231",
-    "Sources/ConsoleProgressKit/Shared/TimedActivity.swift": "8ecff60a7289b43d1d5906c346cf6158058d45c0da117a1371d83d45a61a03fd"
+    "Sources/ConsoleProgressKit/Shared/TimedActivity.swift": "8ecff60a7289b43d1d5906c346cf6158058d45c0da117a1371d83d45a61a03fd",
+    "Sources/ConsoleProgressTesting/Exports.swift": "f0947e9a571742ac1f5d501373d9211cc0f8659e6564ebb92fb285ba77f93bff",
+    "Sources/ConsoleProgressTesting/MockProgressDisplay.swift": "975c5d239bdc2d2b4e2d35b1b2ce7f6803df8d222cf25ca472732d0fad68e039",
+    "Sources/ConsoleProgressTesting/RecordedActivity.swift": "cf66899717127ee8cf34f0464be7fc6f73f7f1caef54b2d8d57325e155d42857",
+    "Sources/ConsoleProgressTesting/RecordedNote.swift": "fbb80a463e36d919e6a90c52c45748b9a2777598a8c5e2fb506f249b04f28b4a",
+    "Sources/ConsoleProgressTesting/RecordedOutcome.swift": "29f3bfb552388c5af235fb341fc5c8c65346da0094e6cfdb711ddcc0546baed6",
+    "Sources/ConsoleProgressTesting/RecordedUpdate.swift": "71f80b0427ff4ee260e27f85289edfd676e9a609790d7859db7f234d271459b9"
   },
   "types": {
     "ProgressDisplay": {
@@ -73,6 +79,38 @@
       "file": "Sources/ConsoleProgressKit/Shared/TerminalCapabilities.swift",
       "doc": "ApiReference.md",
       "anchor": "TerminalSize",
+      "conforms": []
+    },
+    "MockProgressDisplay": {
+      "file": "Sources/ConsoleProgressTesting/MockProgressDisplay.swift",
+      "doc": "TestingReference.md",
+      "anchor": "MockProgressDisplay",
+      "conforms": [
+        "ProgressDisplay"
+      ]
+    },
+    "RecordedActivity": {
+      "file": "Sources/ConsoleProgressTesting/RecordedActivity.swift",
+      "doc": "TestingReference.md",
+      "anchor": "RecordedActivity",
+      "conforms": []
+    },
+    "RecordedUpdate": {
+      "file": "Sources/ConsoleProgressTesting/RecordedUpdate.swift",
+      "doc": "TestingReference.md",
+      "anchor": "RecordedUpdate",
+      "conforms": []
+    },
+    "RecordedOutcome": {
+      "file": "Sources/ConsoleProgressTesting/RecordedOutcome.swift",
+      "doc": "TestingReference.md",
+      "anchor": "RecordedOutcome",
+      "conforms": []
+    },
+    "RecordedNote": {
+      "file": "Sources/ConsoleProgressTesting/RecordedNote.swift",
+      "doc": "TestingReference.md",
+      "anchor": "RecordedNote",
       "conforms": []
     }
   }

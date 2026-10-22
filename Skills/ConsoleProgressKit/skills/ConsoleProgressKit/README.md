@@ -18,6 +18,7 @@ The skill loads automatically when a task involves ConsoleProgressKit types. You
 |------|------|
 | `SKILL.md` | Entry point: package metadata, routing table, quick reference |
 | `ApiReference.md` | All 7 public types, how the live and plain displays differ, and best practices |
+| `TestingReference.md` | `ConsoleProgressTesting`: `MockProgressDisplay`, its recorded types, and a complete test example |
 | `manifest.json` | Baseline for incremental updates (data; do not edit by hand) |
 
 ## Maintenance
