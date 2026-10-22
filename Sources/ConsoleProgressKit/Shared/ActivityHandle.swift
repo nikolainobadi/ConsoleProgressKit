@@ -9,7 +9,7 @@
 public struct ActivityHandle: Sendable {
     private let send: @Sendable (ActivityUpdate) -> Void
 
-    init(send: @escaping @Sendable (ActivityUpdate) -> Void) {
+    package init(send: @escaping @Sendable (ActivityUpdate) -> Void) {
         self.send = send
     }
 }

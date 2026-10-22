@@ -95,6 +95,40 @@ Wrap synchronous prompts in `display.suspended { ... }` to clear running activit
 
 Call `restoreTerminal()` when ending early to erase running activities, reset colors, and show the cursor. This permanently stops display output; it does not cancel the tracked operations.
 
+## Testing
+
+The `ConsoleProgressTesting` product provides `MockProgressDisplay`, a display that writes nothing and records what your code reported. Add it to a test target:
+
+```swift
+.testTarget(
+    name: "YourTargetTests",
+    dependencies: [
+        "YourTarget",
+        .product(name: "ConsoleProgressTesting", package: "ConsoleProgressKit")
+    ]
+)
+```
+
+Pass it wherever your code takes `any ProgressDisplay`, then assert on what was recorded:
+
+```swift
+import Testing
+import ConsoleProgressTesting
+
+let display = MockProgressDisplay()
+try await Uploader(display: display).upload(["a.zip", "b.zip"])
+
+#expect(display.activities == [
+    RecordedActivity(
+        title: "Uploading",
+        updates: [.progress(completed: 1, total: 2), .progress(completed: 2, total: 2)],
+        outcome: .succeeded
+    )
+])
+```
+
+The mock also records notes, `writeOutput(_:)` text, prompt suspensions, and whether `restoreTerminal()` was called.
+
 ## Architecture
 
 ### Core Components

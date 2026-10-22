@@ -12,6 +12,9 @@ let package = Package(
         .library(
             name: "ConsoleProgressKit",
             targets: ["ConsoleProgressKit"]),
+        .library(
+            name: "ConsoleProgressTesting",
+            targets: ["ConsoleProgressTesting"]),
     ],
     targets: [
         .target(
@@ -20,10 +23,25 @@ let package = Package(
                 .enableUpcomingFeature("NonisolatedNonsendingByDefault")
             ]
         ),
+        .target(
+            name: "ConsoleProgressTesting",
+            dependencies: [
+                "ConsoleProgressKit"
+            ],
+            swiftSettings: [
+                .enableUpcomingFeature("NonisolatedNonsendingByDefault")
+            ]
+        ),
         .testTarget(
             name: "ConsoleProgressKitTests",
             dependencies: [
                 "ConsoleProgressKit"
+            ]
+        ),
+        .testTarget(
+            name: "ConsoleProgressTestingTests",
+            dependencies: [
+                "ConsoleProgressTesting"
             ]
         ),
     ]

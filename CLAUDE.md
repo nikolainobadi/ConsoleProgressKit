@@ -45,6 +45,11 @@ open Package.swift
 - Writes activity starts, updates, and outcomes without animation or escape codes
 - Suitable for pipes, logs, and non-interactive callers
 
+**MockProgressDisplay** (`Sources/ConsoleProgressTesting/MockProgressDisplay.swift`)
+- Ships in the separate `ConsoleProgressTesting` product, which re-exports `ConsoleProgressKit`
+- Writes nothing; records activities (title, `RecordedUpdate`s, `RecordedOutcome`), notes, written output, suspensions, and terminal restoration
+- Creates working handles through `ActivityHandle`'s `package` initializer, so the handle stays without a public initializer
+
 ### Key Design Patterns
 
 1. **Terminal Output Management**: Callers choose the live or plain display; `TerminalCapabilities.standardErrorIsTerminal` exposes stderr terminal detection. Progress and notes use stderr, while `writeOutput(_:)` writes results to stdout without disrupting the live region.
@@ -56,13 +61,16 @@ open Package.swift
    - `track(_:operation:)` - Run an async operation with an `ActivityHandle`, report its outcome and elapsed time, return its value, and rethrow its errors
    - `note(_:style:)` - Print a note
    - `restoreTerminal()` - Permanently stop display output; subsequent tracked operations still execute
+   - `MockProgressDisplay()` (`ConsoleProgressTesting`) - Record what code reports, for tests
 
 ## Development Notes
 
 - Swift 6.2+ required (see Package.swift)
 - Platform: macOS 15+ (see Package.swift)
 - `ConsoleProgressKitTests` uses Swift Testing in `Tests/ConsoleProgressKitTests/`, with coverage for live state transitions and shared formatting helpers
-- The library target enables `NonisolatedNonsendingByDefault` to preserve caller isolation for async operations
+- `ConsoleProgressTestingTests` covers `MockProgressDisplay` in `Tests/ConsoleProgressTestingTests/`
+- `ConsoleProgressTesting` depends on `package` access (`ActivityHandle.init(send:)`, `ActivityUpdate`); keep those `package`, not `public`
+- Both library targets enable `NonisolatedNonsendingByDefault` to preserve caller isolation for async operations
 - The root package exports the library; `Demo/` is a separate package with the `progress-demo` executable and its own external dependencies
 
 ## Claude Code Skill

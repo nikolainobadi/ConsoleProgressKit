@@ -381,6 +381,7 @@ Its initializer is not public; values come from `TerminalCapabilities.standardEr
 - **Expect the error after the ✗ line** — `track` prints the failure, then rethrows the operation's error unchanged; don't print the failure again.
 - **Don't rely on output after restoring** — Once `restoreTerminal()` runs, both displays drop everything, including `writeOutput`.
 - **Only report through the handle you were given** — `ActivityHandle` has no public initializer; keep it inside the `operation` closure, or pass it down to the functions that do the work.
+- **Test with `MockProgressDisplay`** — In tests, inject the mock from the `ConsoleProgressTesting` product instead of a silenced real display; see `TestingReference.md`.
 - **Use `update(detail:)` for "what's happening now", `output(line:)` for logs** — Details replace each other and vanish from the finished line; output lines are kept so a failure shows them.
 - **Report progress with the final count** — Call `progress(completed: total, total: total)` at the end, or the live bar stops one step short.
 - **Pair `markWaiting()` with `markRunning()`** — In the live display, a waiting activity hides its spinner, detail, progress, and output tail until it is marked running again. The plain display continues printing updates while waiting.
