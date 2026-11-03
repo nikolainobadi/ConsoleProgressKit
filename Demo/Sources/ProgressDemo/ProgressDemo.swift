@@ -23,6 +23,9 @@ struct ProgressDemo: NnRootCommand {
     @Option(help: "The simulated scenario to run. Prompts for one when omitted.")
     var scenario: ProgressDemoScenario?
 
+    @Flag(help: "Draws the live display with a custom color theme.")
+    var themed = false
+
     static var defaultFactory: DemoContextFactory {
         return .init()
     }
@@ -90,7 +93,7 @@ private extension ProgressDemo {
 
     func makeDisplay() -> any ProgressDisplay {
         if InteractionMode.current.isInteractive && TerminalCapabilities.standardErrorIsTerminal {
-            return LiveProgressDisplay()
+            return LiveProgressDisplay(theme: themed ? Self.customTheme : .standard)
         }
 
         return PlainProgressDisplay()
@@ -262,6 +265,7 @@ private extension ProgressDemo {
 
 // MARK: - Simulated Steps
 private extension ProgressDemo {
+    static let customTheme = ProgressTheme(spinner: .cyan, progressBar: .brightMagenta, success: .brightGreen, failure: .brightRed, warning: .brightYellow)
     static let chooseVersionTitle = "Asking the AI to choose a version"
     static let readmeTitle = "Updating README.md with readme"
     static let buildAndTestTitle = "Building and testing the project"

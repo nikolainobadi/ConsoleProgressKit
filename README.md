@@ -14,6 +14,7 @@ ConsoleProgressKit is a lightweight Swift Package Manager library providing acti
 - **In-place activity updates** with animated spinners and progress bars
 - **Concurrent activities** with individual details, waiting states, and output tails
 - **Automatic outcomes** showing success or failure and elapsed time
+- **Custom colors** for the live display's spinner, progress bars, and status symbols
 - **Plain output** without animation or escape codes for logs and pipes
 - **Separate output streams** - progress on stderr and command results on stdout
 - **Zero dependencies** - pure Swift implementation
@@ -90,11 +91,30 @@ Details are omitted from the finished activity line. The live display shows rece
 
 ### Notes and Terminal Interaction
 
-Use `display.note("Message", style: .info)` for informational notes or `.warning` for warnings. The live display uses colors for outcomes and warnings; the plain display emits no escape codes.
+Use `display.note("Message", style: .info)` for informational notes or `.warning` for warnings. The live display colors the symbols for outcomes and warnings; the plain display emits no escape codes.
 
 Wrap synchronous prompts in `display.suspended { ... }` to clear running activities while reading input, then redraw them. Use `writeOutput(_:)` for command results on stdout while progress remains on stderr.
 
 Call `restoreTerminal()` when ending early to erase running activities, reset colors, and show the cursor. This permanently stops display output; it does not cancel the tracked operations.
+
+### Custom Colors
+
+Pass a `ProgressTheme` when creating a live display to choose its colors from the 16 named ANSI colors in `TerminalColor`. The theme applies for the display's whole lifetime:
+
+```swift
+let theme = ProgressTheme(
+    spinner: .cyan,
+    progressBar: .brightBlue,
+    success: .green,
+    failure: .red,
+    warning: .yellow
+)
+let display = LiveProgressDisplay(theme: theme)
+```
+
+Pass `nil` for `spinner` or `progressBar` to use the terminal's default foreground color. `LiveProgressDisplay()` uses `ProgressTheme.standard`: no spinner or bar color, green success, red failure, and yellow warnings.
+
+A theme colors the spinner, the progress bar's filled cells, and the `✓`, `✗`, and `!` symbols. Titles, details, and info notes keep the default foreground color, and waiting lines and output tails stay dim. `PlainProgressDisplay` and `MockProgressDisplay` don't take a theme.
 
 ## Testing
 
@@ -145,6 +165,10 @@ The mock also records notes, `writeOutput(_:)` text, prompt suspensions, and whe
 **TerminalCapabilities**
 - Reports whether stderr is a terminal and its available dimensions
 - Lets callers select the appropriate display
+
+**ProgressTheme**
+- Holds the `TerminalColor` values `LiveProgressDisplay` uses for its spinner, progress bars, and status symbols
+- Set when the display is created
 
 ### Terminal Output Management
 

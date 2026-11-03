@@ -6,12 +6,14 @@
 //
 
 enum ProgressBar {
-    static func make(completed: Int, total: Int) -> String {
+    /// Makes the bar and its count. `fillColor` colors the filled cells only.
+    static func make(completed: Int, total: Int, fillColor: TerminalColor?) -> String {
         let clampedTotal = max(total, 1)
         let clampedCompleted = min(max(completed, 0), clampedTotal)
-        let filledCount = clampedCompleted * width / clampedTotal
+        let filledCount = clampedTotal.dividingFullWidth(width.multipliedFullWidth(by: clampedCompleted)).quotient
+        let filledCells = TerminalStyle.apply(fillColor, to: String(repeating: filled, count: filledCount))
 
-        return String(repeating: filled, count: filledCount) + String(repeating: empty, count: width - filledCount) + " \(clampedCompleted)/\(clampedTotal)"
+        return filledCells + String(repeating: empty, count: width - filledCount) + " \(clampedCompleted)/\(clampedTotal)"
     }
 }
 

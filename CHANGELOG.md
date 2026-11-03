@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Add `LiveProgressDisplay(theme:)` and `ProgressTheme` to choose the colors of the live display's spinner, progress bar fill, and `✓`, `✗`, and `!` symbols; `LiveProgressDisplay()` keeps its current colors
+- Add `TerminalColor` with the 16 named ANSI colors
+
+### Fixed
+- Fix a crash in the live display's progress bar when `progress(completed:total:)` reports extremely large counts
+
 ## [0.6.0] - 2026-10-21
 
 ### Added

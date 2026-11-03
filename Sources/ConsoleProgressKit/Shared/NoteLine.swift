@@ -6,12 +6,13 @@
 //
 
 enum NoteLine {
-    static func make(text: String, style: NoteStyle, colorsAreEnabled: Bool) -> String {
+    /// Makes the line for a note, with its symbol uncolored when `theme` is `nil`.
+    static func make(text: String, style: NoteStyle, theme: ProgressTheme?) -> String {
         switch style {
         case .info:
             return text
         case .warning:
-            return TerminalStyle.apply(TerminalStyle.yellow, to: warningSymbol, colorsAreEnabled: colorsAreEnabled) + " " + text
+            return TerminalStyle.apply(theme?.warning, to: warningSymbol) + " " + text
         }
     }
 }

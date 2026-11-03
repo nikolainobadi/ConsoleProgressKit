@@ -31,10 +31,18 @@ import Synchronization
 /// terminal in the order the state changed.
 public final class LiveProgressDisplay: Sendable {
     private let clock = ContinuousClock()
-    private let state = Mutex(LiveDisplayState())
+    private let state: Mutex<LiveDisplayState>
     private let timerQueue = DispatchQueue(label: "ProgressDisplay.LiveProgressDisplay")
 
-    public init() { }
+    /// Creates a display that uses the standard theme.
+    public convenience init() {
+        self.init(theme: .standard)
+    }
+
+    /// Creates a display that draws its spinner, progress bars, and status symbols in `theme`'s colors.
+    public init(theme: ProgressTheme) {
+        state = Mutex(LiveDisplayState(theme: theme))
+    }
 }
 
 // MARK: - ProgressDisplay

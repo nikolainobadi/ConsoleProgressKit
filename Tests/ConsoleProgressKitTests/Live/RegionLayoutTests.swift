@@ -15,7 +15,7 @@ struct RegionLayoutTests {
         let sut = makeSUT()
         let activities = [makeActivity(title: "Build", updates: [])]
 
-        #expect(sut.lines(for: activities, frameIndex: 0, size: nil) == ["⠋ Build"])
+        #expect(sut.lines(for: activities, frameIndex: 0, size: nil, theme: .standard) == ["⠋ Build"])
     }
 
     @Test
@@ -23,7 +23,7 @@ struct RegionLayoutTests {
         let sut = makeSUT()
         let activities = [makeActivity(title: "Build", updates: [])]
 
-        #expect(sut.lines(for: activities, frameIndex: 1, size: nil) == ["⠙ Build"])
+        #expect(sut.lines(for: activities, frameIndex: 1, size: nil, theme: .standard) == ["⠙ Build"])
     }
 
     @Test
@@ -31,7 +31,7 @@ struct RegionLayoutTests {
         let sut = makeSUT()
         let activities = [makeActivity(title: "Build", updates: [.detail("compiling")])]
 
-        #expect(sut.lines(for: activities, frameIndex: 0, size: nil) == ["⠋ Build — compiling"])
+        #expect(sut.lines(for: activities, frameIndex: 0, size: nil, theme: .standard) == ["⠋ Build — compiling"])
     }
 
     @Test
@@ -39,7 +39,7 @@ struct RegionLayoutTests {
         let sut = makeSUT()
         let activities = [makeActivity(title: "Build", updates: [.progress(completed: 2, total: 4)])]
 
-        #expect(sut.lines(for: activities, frameIndex: 0, size: nil) == ["⠋ Build ██████████░░░░░░░░░░ 2/4"])
+        #expect(sut.lines(for: activities, frameIndex: 0, size: nil, theme: .standard) == ["⠋ Build ██████████░░░░░░░░░░ 2/4"])
     }
 
     @Test
@@ -47,7 +47,7 @@ struct RegionLayoutTests {
         let sut = makeSUT()
         let activities = [makeActivity(title: "Build", updates: [.waiting(true)])]
 
-        #expect(sut.lines(for: activities, frameIndex: 0, size: nil) == ["\u{1B}[2m◦ Build (waiting)\u{1B}[0m"])
+        #expect(sut.lines(for: activities, frameIndex: 0, size: nil, theme: .standard) == ["\u{1B}[2m◦ Build (waiting)\u{1B}[0m"])
     }
 }
 
@@ -59,7 +59,7 @@ extension RegionLayoutTests {
         let outputs = (1...7).map { ActivityUpdate.output("line \($0)") }
         let activities = [makeActivity(title: "Build", updates: outputs)]
 
-        #expect(sut.lines(for: activities, frameIndex: 0, size: nil) == [
+        #expect(sut.lines(for: activities, frameIndex: 0, size: nil, theme: .standard) == [
             "⠋ Build",
             "\u{1B}[2m    line 3\u{1B}[0m",
             "\u{1B}[2m    line 4\u{1B}[0m",
@@ -74,7 +74,7 @@ extension RegionLayoutTests {
         let sut = makeSUT()
         let activities = [makeActivity(title: "Build", updates: [.output("line 1"), .waiting(true)])]
 
-        #expect(sut.lines(for: activities, frameIndex: 0, size: nil) == ["\u{1B}[2m◦ Build (waiting)\u{1B}[0m"])
+        #expect(sut.lines(for: activities, frameIndex: 0, size: nil, theme: .standard) == ["\u{1B}[2m◦ Build (waiting)\u{1B}[0m"])
     }
 }
 
@@ -88,7 +88,7 @@ extension RegionLayoutTests {
             makeActivity(title: "Test", updates: [])
         ]
 
-        #expect(sut.lines(for: activities, frameIndex: 0, size: TerminalSize(width: 80, height: 3)) == ["⠋ Build", "⠋ Test"])
+        #expect(sut.lines(for: activities, frameIndex: 0, size: TerminalSize(width: 80, height: 3), theme: .standard) == ["⠋ Build", "⠋ Test"])
     }
 
     @Test
@@ -100,7 +100,7 @@ extension RegionLayoutTests {
             makeActivity(title: "Lint", updates: [])
         ]
 
-        #expect(sut.lines(for: activities, frameIndex: 0, size: TerminalSize(width: 80, height: 3)) == ["⠋ Build", "\u{1B}[2m… and 2 more\u{1B}[0m"])
+        #expect(sut.lines(for: activities, frameIndex: 0, size: TerminalSize(width: 80, height: 3), theme: .standard) == ["⠋ Build", "\u{1B}[2m… and 2 more\u{1B}[0m"])
     }
 
     @Test
@@ -108,7 +108,73 @@ extension RegionLayoutTests {
         let sut = makeSUT()
         let activities = [makeActivity(title: "Building", updates: [])]
 
-        #expect(sut.lines(for: activities, frameIndex: 0, size: TerminalSize(width: 6, height: 10)) == ["⠋ Bu…\u{1B}[0m"])
+        #expect(sut.lines(for: activities, frameIndex: 0, size: TerminalSize(width: 6, height: 10), theme: .standard) == ["⠋ Bu…\u{1B}[0m"])
+    }
+
+    @Test
+    func `A colored spinner's escape codes do not count toward the terminal's width`() {
+        let sut = makeSUT()
+        let activities = [makeActivity(title: "Build", updates: [])]
+        let theme = makeTheme(spinner: .cyan, progressBar: nil)
+
+        #expect(sut.lines(for: activities, frameIndex: 0, size: TerminalSize(width: 8, height: 10), theme: theme) == ["\u{1B}[36m⠋\u{1B}[0m Build"])
+    }
+
+    @Test
+    func `A line with a colored spinner is cut to the terminal's width`() {
+        let sut = makeSUT()
+        let activities = [makeActivity(title: "Building", updates: [])]
+        let theme = makeTheme(spinner: .cyan, progressBar: nil)
+
+        #expect(sut.lines(for: activities, frameIndex: 0, size: TerminalSize(width: 6, height: 10), theme: theme) == ["\u{1B}[36m⠋\u{1B}[0m Bu…\u{1B}[0m"])
+    }
+
+    @Test
+    func `A colored bar cut partway through its filled cells ends its color before the cut`() {
+        let sut = makeSUT()
+        let activities = [makeActivity(title: "Build", updates: [.progress(completed: 2, total: 4)])]
+        let theme = makeTheme(spinner: nil, progressBar: .magenta)
+
+        #expect(sut.lines(for: activities, frameIndex: 0, size: TerminalSize(width: 12, height: 10), theme: theme) == ["⠋ Build \u{1B}[35m██\u{1B}[0m…\u{1B}[0m"])
+    }
+}
+
+// MARK: - Colors
+extension RegionLayoutTests {
+    @Test
+    func `The spinner frame uses the theme's spinner color`() {
+        let sut = makeSUT()
+        let activities = [makeActivity(title: "Build", updates: [])]
+        let theme = makeTheme(spinner: .cyan, progressBar: nil)
+
+        #expect(sut.lines(for: activities, frameIndex: 0, size: nil, theme: theme) == ["\u{1B}[36m⠋\u{1B}[0m Build"])
+    }
+
+    @Test
+    func `The progress bar's filled cells use the theme's progress bar color`() {
+        let sut = makeSUT()
+        let activities = [makeActivity(title: "Build", updates: [.progress(completed: 2, total: 4)])]
+        let theme = makeTheme(spinner: nil, progressBar: .magenta)
+
+        #expect(sut.lines(for: activities, frameIndex: 0, size: nil, theme: theme) == ["⠋ Build \u{1B}[35m██████████\u{1B}[0m░░░░░░░░░░ 2/4"])
+    }
+
+    @Test
+    func `A progress bar with no color of its own does not take the spinner's color`() {
+        let sut = makeSUT()
+        let activities = [makeActivity(title: "Build", updates: [.progress(completed: 2, total: 4)])]
+        let theme = makeTheme(spinner: .cyan, progressBar: nil)
+
+        #expect(sut.lines(for: activities, frameIndex: 0, size: nil, theme: theme) == ["\u{1B}[36m⠋\u{1B}[0m Build ██████████░░░░░░░░░░ 2/4"])
+    }
+
+    @Test
+    func `A waiting activity stays dim whatever the theme's spinner color`() {
+        let sut = makeSUT()
+        let activities = [makeActivity(title: "Build", updates: [.waiting(true)])]
+        let theme = makeTheme(spinner: .cyan, progressBar: nil)
+
+        #expect(sut.lines(for: activities, frameIndex: 0, size: nil, theme: theme) == ["\u{1B}[2m◦ Build (waiting)\u{1B}[0m"])
     }
 }
 
@@ -121,6 +187,10 @@ private extension RegionLayoutTests {
 
 // MARK: - Helpers
 private extension RegionLayoutTests {
+    func makeTheme(spinner: TerminalColor?, progressBar: TerminalColor?) -> ProgressTheme {
+        return .init(spinner: spinner, progressBar: progressBar, success: .green, failure: .red, warning: .yellow)
+    }
+
     func makeActivity(title: String, updates: [ActivityUpdate]) -> RunningActivity {
         return updates.reduce(RunningActivity(id: UUID(), title: title)) { activity, update in
             activity.applying(update, keptOutputLineCount: 20)

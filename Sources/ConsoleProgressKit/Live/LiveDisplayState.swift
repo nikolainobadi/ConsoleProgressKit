@@ -15,6 +15,7 @@ import Foundation
 ///
 /// Once stopped, the display makes no further changes, so these methods assume the state is running.
 struct LiveDisplayState {
+    private let theme: ProgressTheme
     private var activities: [RunningActivity] = []
     private var heldLines: [String] = []
     private var frameIndex = 0
@@ -23,6 +24,10 @@ struct LiveDisplayState {
     private var screen = TerminalScreen(renderedLineCount: 0, cursorIsHidden: false)
     private(set) var isStopped = false
     private(set) var timer: (any DispatchSourceTimer)?
+
+    init(theme: ProgressTheme) {
+        self.theme = theme
+    }
 }
 
 // MARK: - Actions
@@ -54,7 +59,7 @@ extension LiveDisplayState {
         var next = self
         let activity = next.activities.remove(at: index)
 
-        return next.drawing(above: Self.makeFinishedLines(for: activity, succeeded: succeeded, elapsed: elapsed))
+        return next.drawing(above: makeFinishedLines(for: activity, succeeded: succeeded, elapsed: elapsed))
     }
 
     func updating(_ update: ActivityUpdate, id: UUID) -> Transition {
@@ -70,7 +75,7 @@ extension LiveDisplayState {
     }
 
     func noting(_ text: String, style: NoteStyle) -> Transition {
-        return drawing(above: NoteLine.make(text: text, style: style, colorsAreEnabled: true))
+        return drawing(above: NoteLine.make(text: text, style: style, theme: theme))
     }
 
     /// Erases the region so a line can be written to stdout; the next tick draws it again.
@@ -139,7 +144,7 @@ private extension LiveDisplayState {
             return .init(state: next, output: "")
         }
 
-        let region = RegionLayout.lines(for: activities, frameIndex: frameIndex, size: TerminalCapabilities.standardErrorSize)
+        let region = RegionLayout.lines(for: activities, frameIndex: frameIndex, size: TerminalCapabilities.standardErrorSize, theme: theme)
         next.regionIsStale = false
 
         return next.redrawing(above: line, region: region, cursorIsHidden: !activities.isEmpty)
@@ -152,8 +157,8 @@ private extension LiveDisplayState {
         return .init(state: next, output: screen.makeRedraw(above: line, region: region, cursorIsHidden: cursorIsHidden))
     }
 
-    static func makeFinishedLines(for activity: RunningActivity, succeeded: Bool, elapsed: Duration) -> String {
-        let finishedLine = ActivityLine.finished(title: activity.title, succeeded: succeeded, elapsed: elapsed, colorsAreEnabled: true)
+    func makeFinishedLines(for activity: RunningActivity, succeeded: Bool, elapsed: Duration) -> String {
+        let finishedLine = ActivityLine.finished(title: activity.title, succeeded: succeeded, elapsed: elapsed, theme: theme)
         let failureLines = succeeded ? [] : activity.outputLines.map { RegionLayout.outputIndent + $0 }
 
         return ([finishedLine] + failureLines).joined(separator: "\n")

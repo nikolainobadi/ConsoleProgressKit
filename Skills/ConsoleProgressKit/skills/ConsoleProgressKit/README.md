@@ -17,12 +17,9 @@ The skill loads automatically when a task involves ConsoleProgressKit types. You
 | File | Role |
 |------|------|
 | `SKILL.md` | Entry point: package metadata, routing table, quick reference |
-| `ApiReference.md` | All 7 public types, how the live and plain displays differ, and best practices |
+| `ApiReference.md` | All 9 public types, how the live and plain displays differ, and best practices |
 | `TestingReference.md` | `ConsoleProgressTesting`: `MockProgressDisplay`, its recorded types, and a complete test example |
-| `manifest.json` | Baseline for incremental updates (data; do not edit by hand) |
 
 ## Maintenance
 
 This skill lives in the ConsoleProgressKit repo under `Skills/ConsoleProgressKit`, so an API change and its documentation land in the same PR. The `nn-swift-skills` marketplace pins it to a release tag, so edits reach users when the package is tagged, not when they merge.
-
-Hand edits outside `<!-- type:... -->` anchors survive regeneration; edits inside them may be overwritten.

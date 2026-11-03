@@ -34,7 +34,7 @@ extension PlainProgressDisplay: ProgressDisplay {
     }
 
     public func note(_ text: String, style: NoteStyle) {
-        write(NoteLine.make(text: text, style: style, colorsAreEnabled: false) + "\n", to: .error)
+        write(NoteLine.make(text: text, style: style, theme: nil) + "\n", to: .error)
     }
 
     public func suspended<T>(_ body: () throws -> T) rethrows -> T {
@@ -83,6 +83,6 @@ private extension PlainProgressDisplay {
     }
 
     func finish(title: String, succeeded: Bool, elapsed: Duration) {
-        write(ActivityLine.finished(title: title, succeeded: succeeded, elapsed: elapsed, colorsAreEnabled: false) + "\n", to: .error)
+        write(ActivityLine.finished(title: title, succeeded: succeeded, elapsed: elapsed, theme: nil) + "\n", to: .error)
     }
 }
