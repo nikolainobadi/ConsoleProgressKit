@@ -33,7 +33,7 @@ ConsoleProgressKit is a lightweight Swift Package Manager library providing acti
 Add the package to your `Package.swift`:
 
 ```swift
-.package(url: "https://github.com/nikolainobadi/ConsoleProgressKit", from: "0.6.0")
+.package(url: "https://github.com/nikolainobadi/ConsoleProgressKit", from: "0.7.0")
 ```
 
 Then include it in your target:

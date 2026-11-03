@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.7.0] - 2026-11-03
+
 ### Added
 - Add `LiveProgressDisplay(theme:)` and `ProgressTheme` to choose the colors of the live display's spinner, progress bar fill, and `✓`, `✗`, and `!` symbols; `LiveProgressDisplay()` keeps its current colors
 - Add `TerminalColor` with the 16 named ANSI colors
@@ -47,7 +49,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add `ConsoleColor` with green, yellow, blue, magenta, and cyan options
 - Require Swift 6.0
 
-[Unreleased]: https://github.com/nikolainobadi/ConsoleProgressKit/compare/0.6.0...HEAD
+[Unreleased]: https://github.com/nikolainobadi/ConsoleProgressKit/compare/0.7.0...HEAD
+[0.7.0]: https://github.com/nikolainobadi/ConsoleProgressKit/compare/0.6.0...0.7.0
 [0.6.0]: https://github.com/nikolainobadi/ConsoleProgressKit/compare/0.5.0...0.6.0
 [0.5.0]: https://github.com/nikolainobadi/ConsoleProgressKit/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/nikolainobadi/ConsoleProgressKit/releases/tag/v0.4.0

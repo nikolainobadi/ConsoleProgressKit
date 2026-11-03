@@ -7,7 +7,7 @@ description: ConsoleProgressKit Swift API reference for showing progress in comm
 
 Shows what a long-running Swift command is doing: animated spinner lines on an interactive terminal, or plain one-line-per-event output for pipes and CI, always on stderr so stdout stays clean.
 
-**Dependency:** `.package(url: "https://github.com/nikolainobadi/ConsoleProgressKit", from: "0.6.0")`
+**Dependency:** `.package(url: "https://github.com/nikolainobadi/ConsoleProgressKit", from: "0.7.0")`
 **Products:** `ConsoleProgressKit` (production), `ConsoleProgressTesting` (test helpers, 0.6.0+)
 **Platforms:** macOS 15+ | **Swift:** 6.2+
 <!-- package_path: /Users/nelixpro/Desktop/ConsoleProgressKit -->
@@ -27,7 +27,7 @@ If a listed file cannot be read, say so and do not guess signatures, parameter l
 
 ### Production
 - **Entry point:** construct `LiveProgressDisplay()` when `TerminalCapabilities.standardErrorIsTerminal` is true, otherwise `PlainProgressDisplay()`; pass it around as `any ProgressDisplay`.
-- **Colors:** use `LiveProgressDisplay(theme:)` with a `ProgressTheme` to choose the spinner, progress bar, and ✓/✗/`!` colors from the 16 `TerminalColor` values.
+- **Colors (0.7.0+):** use `LiveProgressDisplay(theme:)` with a `ProgressTheme` to choose the spinner, progress bar, and ✓/✗/`!` colors from the 16 `TerminalColor` values.
 - **Track work:** `try await display.track("Title") { activity in ... }` shows the activity, then `✓`/`✗` with elapsed time, and returns or rethrows the operation's result.
 - **Report from inside:** `activity.update(detail:)`, `output(line:)`, `progress(completed:total:)`, `markWaiting()`, `markRunning()`.
 - **Keep the screen intact:** results go through `writeOutput(_:)`, prompts go inside `suspended { }`, and `restoreTerminal()` runs on Ctrl-C.

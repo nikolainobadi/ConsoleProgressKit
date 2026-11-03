@@ -313,6 +313,8 @@ display.note("Disk almost full.", style: .warning)
 <!-- type:ProgressTheme -->
 ## Struct: ProgressTheme
 
+Requires ConsoleProgressKit `0.7.0` or later, including `LiveProgressDisplay(theme:)`.
+
 The colors `LiveProgressDisplay` uses for its spinner, progress bar, and status symbols.
 
 ```swift
@@ -351,6 +353,8 @@ let display = LiveProgressDisplay(theme: theme)
 
 <!-- type:TerminalColor -->
 ## Enum: TerminalColor
+
+Requires ConsoleProgressKit `0.7.0` or later.
 
 One of the 16 named ANSI colors. The exact shade of each color comes from the user's terminal palette.
 
