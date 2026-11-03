@@ -79,7 +79,6 @@ open Package.swift
 The API reference skill for this package lives here, in `Skills/ConsoleProgressKit/`, and is served by the public `nn-swift-skills` marketplace as `ConsoleProgressKit@nn-swift-skills`. It was moved out of `NobadiScripts` so the API and its documentation change together: **any PR that changes the public API must update `Skills/ConsoleProgressKit/` in the same PR.**
 
 - `Skills/` is not a SwiftPM target; it ships only through the marketplace.
-- `Skills/ConsoleProgressKit/.claude-plugin/plugin.json` deliberately has **no `version` field**. The marketplace pins the skill to a git tag, and the plugin cache is keyed by commit sha. Do not reintroduce a version; a hand-typed number nothing verifies is the staleness this arrangement removes.
 - `manifest.json` records the commit, source hashes, and type anchors the docs were generated from; regenerate it when the docs are regenerated.
 
 ## Releasing
