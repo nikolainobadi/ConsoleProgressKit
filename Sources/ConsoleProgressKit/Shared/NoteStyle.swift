@@ -10,6 +10,6 @@ public enum NoteStyle: Sendable {
     /// Printed as plain text.
     case info
 
-    /// Prefixed with `!`, in yellow when colors are enabled.
+    /// Prefixed with `!`, which `LiveProgressDisplay` draws in its theme's warning color.
     case warning
 }

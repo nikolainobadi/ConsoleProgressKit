@@ -8,8 +8,9 @@
 import Foundation
 
 enum ActivityLine {
-    static func finished(title: String, succeeded: Bool, elapsed: Duration, colorsAreEnabled: Bool) -> String {
-        return "\(makeSymbol(succeeded: succeeded, colorsAreEnabled: colorsAreEnabled)) \(title) (\(format(elapsed: elapsed)))"
+    /// Makes the line for a finished activity, with its symbol uncolored when `theme` is `nil`.
+    static func finished(title: String, succeeded: Bool, elapsed: Duration, theme: ProgressTheme?) -> String {
+        return "\(makeSymbol(succeeded: succeeded, theme: theme)) \(title) (\(format(elapsed: elapsed)))"
     }
 }
 
@@ -18,12 +19,12 @@ private extension ActivityLine {
     static let successSymbol = "✓"
     static let failureSymbol = "✗"
 
-    static func makeSymbol(succeeded: Bool, colorsAreEnabled: Bool) -> String {
+    static func makeSymbol(succeeded: Bool, theme: ProgressTheme?) -> String {
         if succeeded {
-            return TerminalStyle.apply(TerminalStyle.green, to: successSymbol, colorsAreEnabled: colorsAreEnabled)
+            return TerminalStyle.apply(theme?.success, to: successSymbol)
         }
 
-        return TerminalStyle.apply(TerminalStyle.red, to: failureSymbol, colorsAreEnabled: colorsAreEnabled)
+        return TerminalStyle.apply(theme?.failure, to: failureSymbol)
     }
 
     static func format(elapsed: Duration) -> String {

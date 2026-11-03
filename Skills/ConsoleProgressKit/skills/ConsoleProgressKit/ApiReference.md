@@ -1,6 +1,6 @@
 # ConsoleProgressKit API
 
-Shows what a long-running Swift command is doing. `ProgressDisplay` and its two displays — `LiveProgressDisplay` for interactive terminals, `PlainProgressDisplay` for pipes, logs, and CI — plus how a running activity reports what it is doing (`ActivityHandle`), how notes are marked (`NoteStyle`), and how to tell whether stderr is a terminal (`TerminalCapabilities`, `TerminalSize`).
+Shows what a long-running Swift command is doing. `ProgressDisplay` and its two displays — `LiveProgressDisplay` for interactive terminals, `PlainProgressDisplay` for pipes, logs, and CI — plus how a running activity reports what it is doing (`ActivityHandle`), how notes are marked (`NoteStyle`), how to choose the live display's colors (`ProgressTheme`, `TerminalColor`), and how to tell whether stderr is a terminal (`TerminalCapabilities`, `TerminalSize`).
 
 ## Contents
 
@@ -10,6 +10,8 @@ Shows what a long-running Swift command is doing. `ProgressDisplay` and its two 
 - Class: PlainProgressDisplay
 - Struct: ActivityHandle
 - Enum: NoteStyle
+- Struct: ProgressTheme
+- Enum: TerminalColor
 - Enum: TerminalCapabilities
 - Struct: TerminalSize
 - Best Practices
@@ -81,11 +83,11 @@ do {
 | `markWaiting()` / `markRunning()` | Dim `◦ Title (waiting)` line while waiting; spinner returns when running | `Title — waiting` / `Title — started` lines |
 | `output(line:)` | Last 5 lines dimmed under the activity; last 20 printed under ✗ on failure; dropped on success | Every line printed immediately, raw, no title prefix |
 | `progress(completed:total:)` | 20-cell `█░` bar plus `c/t`, clamped (total of at least 1) | `Title — c/t`, raw numbers |
-| `note(_:style:)` | Above the region, `!` in yellow for warnings; held while suspended | In order, uncolored |
+| `note(_:style:)` | Above the region, `!` in the theme's warning color for warnings; held while suspended | In order, uncolored |
 | `suspended(_:)` | Erases the region, shows the cursor, holds finished lines and notes until resume | Just runs `body` |
 | `writeOutput(_:)` | Erases the region on stderr, writes to stdout; region returns on the next tick | Writes to stdout |
 | `restoreTerminal()` | Erases, shows cursor, writes `ESC[0m`, cancels timer, then silent forever | Silent forever |
-| Escape codes and colors | Always on | Never |
+| Escape codes and colors | Always on; colors come from its `ProgressTheme` | Never; takes no theme |
 
 Neither display picks itself. The caller chooses, usually with `TerminalCapabilities.standardErrorIsTerminal`.
 <!-- /type:ProgressDisplay -->
@@ -104,7 +106,8 @@ extension LiveProgressDisplay: ProgressDisplay
 
 | Initializer | Description |
 |-------------|-------------|
-| `init()` | Creates a display with nothing on screen. The redraw timer starts with the first activity. |
+| `init()` | Creates a display that uses `ProgressTheme.standard`, with nothing on screen. The redraw timer starts with the first activity. |
+| `init(theme: ProgressTheme)` | Creates a display that uses `theme`'s colors for its whole lifetime. A theme can't be changed after creation or set per activity. |
 
 ### Methods
 
@@ -155,11 +158,11 @@ The size is read from stderr on every draw (`TerminalCapabilities.standardErrorS
 ⠙ Upload ██████████░░░░░░░░░░ 2/4 — a.zip    running, with progress and detail
 ◦ Test (waiting)                            waiting (dim)
     error: missing symbol                   output tail (dim, indented 4 spaces)
-✓ Build (12.4s)                             finished (✓ green, ✗ red)
-! Disk almost full                          warning note (! yellow)
+✓ Build (12.4s)                             finished (✓ theme.success, ✗ theme.failure)
+! Disk almost full                          warning note (! theme.warning)
 ```
 
-Spinner frames cycle through `⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏`. The cursor is hidden while any activity is running and shown again when none are.
+The spinner frame uses `theme.spinner`, and the bar's filled `█` cells use `theme.progressBar`. Spinner frames cycle through `⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏`. The cursor is hidden while any activity is running and shown again when none are.
 
 ### Suspension and Stopping
 
@@ -297,7 +300,7 @@ public enum NoteStyle: Sendable
 | Case | Associated Values | Description |
 |------|-------------------|-------------|
 | `info` | — | Printed as plain text. |
-| `warning` | — | Prefixed with `!`, in yellow when colors are enabled (live display only). |
+| `warning` | — | Prefixed with `!`. The live display colors it with its theme's `warning` color; the plain display leaves it uncolored. |
 
 ### Usage Example
 
@@ -306,6 +309,68 @@ display.note("Using cached results.", style: .info)
 display.note("Disk almost full.", style: .warning)
 ```
 <!-- /type:NoteStyle -->
+
+<!-- type:ProgressTheme -->
+## Struct: ProgressTheme
+
+The colors `LiveProgressDisplay` uses for its spinner, progress bar, and status symbols.
+
+```swift
+public struct ProgressTheme: Sendable
+```
+
+### Initialization
+
+| Initializer | Description |
+|-------------|-------------|
+| `init(spinner: TerminalColor?, progressBar: TerminalColor?, success: TerminalColor, failure: TerminalColor, warning: TerminalColor)` | Creates a theme. Every color is required; pass `nil` for `spinner` or `progressBar` to use the terminal's default foreground color. |
+
+### Properties
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `spinner` | `TerminalColor?` | The color of the spinner frame. `nil` uses the default foreground color. |
+| `progressBar` | `TerminalColor?` | The color of the bar's filled cells. `nil` uses the default foreground color; it doesn't take the spinner's color. |
+| `success` | `TerminalColor` | The color of the `✓` on a succeeded activity. |
+| `failure` | `TerminalColor` | The color of the `✗` on a failed activity. |
+| `warning` | `TerminalColor` | The color of the `!` on a warning note. |
+| `standard` | `ProgressTheme` | Static. No spinner or bar color, green success, red failure, yellow warning. `LiveProgressDisplay()` uses it. |
+
+### Usage Example
+
+```swift
+let theme = ProgressTheme(spinner: .cyan, progressBar: .brightBlue, success: .green, failure: .red, warning: .yellow)
+let display = LiveProgressDisplay(theme: theme)
+```
+
+### What a Theme Doesn't Color
+
+- Titles, detail text, info notes, the bar's empty cells, and its `c/t` count stay in the default foreground color.
+- Waiting lines, output tails, and `… and N more` stay dim.
+<!-- /type:ProgressTheme -->
+
+<!-- type:TerminalColor -->
+## Enum: TerminalColor
+
+One of the 16 named ANSI colors. The exact shade of each color comes from the user's terminal palette.
+
+```swift
+public enum TerminalColor: Sendable
+```
+
+### Cases
+
+| Standard | Bright |
+|----------|--------|
+| `black` | `brightBlack` |
+| `red` | `brightRed` |
+| `green` | `brightGreen` |
+| `yellow` | `brightYellow` |
+| `blue` | `brightBlue` |
+| `magenta` | `brightMagenta` |
+| `cyan` | `brightCyan` |
+| `white` | `brightWhite` |
+<!-- /type:TerminalColor -->
 
 <!-- type:TerminalCapabilities -->
 ## Enum: TerminalCapabilities
@@ -375,6 +440,7 @@ Its initializer is not public; values come from `TerminalCapabilities.standardEr
 
 - **Depend on `any ProgressDisplay`** — Pass the protocol into the code that does the work, and construct `LiveProgressDisplay` or `PlainProgressDisplay` once, at the entry point.
 - **Choose the display from the terminal** — Use `LiveProgressDisplay` only when `TerminalCapabilities.standardErrorIsTerminal` is true (and the session is interactive); otherwise use `PlainProgressDisplay`. The live display always writes escape codes, even into a file.
+- **Choose colors when creating the live display** — Pass a `ProgressTheme` to `LiveProgressDisplay(theme:)`. `ProgressDisplay` has no color API, so code that takes `any ProgressDisplay` doesn't need to change, and `PlainProgressDisplay` and `MockProgressDisplay` take no theme.
 - **Write results with `writeOutput(_:)`, not `print`** — `print` writes over the live region; `writeOutput` erases it first and keeps progress on stderr and results on stdout.
 - **Wrap every prompt in `suspended(_:)`** — Otherwise the live region is redrawn over the prompt. It costs nothing with the plain display.
 - **Call `restoreTerminal()` on early exit** — Register it as a Ctrl-C cleanup so the cursor is shown and colors are reset. A normal finish restores the cursor on its own.

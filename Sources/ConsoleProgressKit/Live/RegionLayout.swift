@@ -13,9 +13,9 @@ enum RegionLayout {
     static let frameCount = frames.count
     static let outputIndent = "    "
 
-    static func lines(for activities: [RunningActivity], frameIndex: Int, size: TerminalSize?) -> [String] {
-        let frame = frames[frameIndex]
-        let rows = activities.map { makeRows(for: $0, frame: frame) }
+    static func lines(for activities: [RunningActivity], frameIndex: Int, size: TerminalSize?, theme: ProgressTheme) -> [String] {
+        let frame = TerminalStyle.apply(theme.spinner, to: frames[frameIndex])
+        let rows = activities.map { makeRows(for: $0, frame: frame, barColor: theme.progressBar) }
 
         guard let size else {
             return rows.flatMap { [$0.title] + $0.tail }
@@ -41,29 +41,29 @@ private extension RegionLayout {
         }
 
         let shownCount = maximumLineCount - 1
-        let moreLine = TerminalStyle.apply(TerminalStyle.dim, to: "… and \(titles.count - shownCount) more", colorsAreEnabled: true)
+        let moreLine = TerminalStyle.apply(TerminalStyle.dim, to: "… and \(titles.count - shownCount) more")
 
         return Array(titles.prefix(shownCount)) + [moreLine]
     }
 
-    static func makeRows(for activity: RunningActivity, frame: String) -> ActivityRows {
+    static func makeRows(for activity: RunningActivity, frame: String, barColor: TerminalColor?) -> ActivityRows {
         guard !activity.isWaiting else {
-            let waitingLine = TerminalStyle.apply(TerminalStyle.dim, to: waitingSymbol + " " + activity.title + " (waiting)", colorsAreEnabled: true)
+            let waitingLine = TerminalStyle.apply(TerminalStyle.dim, to: waitingSymbol + " " + activity.title + " (waiting)")
 
             return .init(title: waitingLine, tail: [])
         }
 
-        let tail = activity.outputLines.suffix(visibleOutputLineCount).map { TerminalStyle.apply(TerminalStyle.dim, to: outputIndent + $0, colorsAreEnabled: true) }
+        let tail = activity.outputLines.suffix(visibleOutputLineCount).map { TerminalStyle.apply(TerminalStyle.dim, to: outputIndent + $0) }
 
-        return .init(title: frame + " " + makeTitle(for: activity), tail: tail)
+        return .init(title: frame + " " + makeTitle(for: activity, barColor: barColor), tail: tail)
     }
 
-    static func makeTitle(for activity: RunningActivity) -> String {
+    static func makeTitle(for activity: RunningActivity, barColor: TerminalColor?) -> String {
         guard let progress = activity.progress else {
             return DetailLine.make(title: activity.title, detail: activity.detail)
         }
 
-        let bar = ProgressBar.make(completed: progress.completed, total: progress.total)
+        let bar = ProgressBar.make(completed: progress.completed, total: progress.total, fillColor: barColor)
 
         return DetailLine.make(title: activity.title + " " + bar, detail: activity.detail)
     }
