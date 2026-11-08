@@ -13,21 +13,26 @@ enum RegionLayout {
     static let frameCount = frames.count
     static let outputIndent = "    "
 
-    static func lines(for activities: [RunningActivity], frameIndex: Int, size: TerminalSize?, theme: ProgressTheme) -> [String] {
-        let frame = TerminalStyle.apply(theme.spinner, to: frames[frameIndex])
-        let rows = activities.map { makeRows(for: $0, frame: frame, barColor: theme.progressBar) }
+    /// Returns the region's lines. A `nil` theme draws them without color or dimming.
+    static func lines(for activities: [RunningActivity], frameIndex: Int, size: TerminalSize?, theme: ProgressTheme?) -> [String] {
+        let frame = TerminalStyle.apply(theme?.spinner, to: frames[frameIndex])
+        let rows = activities.map { makeRows(for: $0, frame: frame, theme: theme) }
 
         guard let size else {
             return rows.flatMap { [$0.title] + $0.tail }
         }
 
-        return fitToHeight(rows, height: size.height).map { LineFitter.fit($0, width: size.width) }
+        return fitToHeight(rows, height: size.height, theme: theme).map { LineFitter.fit($0, width: size.width) }
     }
 }
 
 // MARK: - Private Methods
 private extension RegionLayout {
-    static func fitToHeight(_ rows: [ActivityRows], height: Int) -> [String] {
+    static func dimmed(_ text: String, theme: ProgressTheme?) -> String {
+        return theme == nil ? text : TerminalStyle.apply(TerminalStyle.dim, to: text)
+    }
+
+    static func fitToHeight(_ rows: [ActivityRows], height: Int, theme: ProgressTheme?) -> [String] {
         let maximumLineCount = max(height - 1, 1)
         let titles = rows.map(\.title)
         let fullLineCount = titles.count + rows.reduce(0) { $0 + $1.tail.count }
@@ -41,21 +46,21 @@ private extension RegionLayout {
         }
 
         let shownCount = maximumLineCount - 1
-        let moreLine = TerminalStyle.apply(TerminalStyle.dim, to: "… and \(titles.count - shownCount) more")
+        let moreLine = dimmed("… and \(titles.count - shownCount) more", theme: theme)
 
         return Array(titles.prefix(shownCount)) + [moreLine]
     }
 
-    static func makeRows(for activity: RunningActivity, frame: String, barColor: TerminalColor?) -> ActivityRows {
+    static func makeRows(for activity: RunningActivity, frame: String, theme: ProgressTheme?) -> ActivityRows {
         guard !activity.isWaiting else {
-            let waitingLine = TerminalStyle.apply(TerminalStyle.dim, to: waitingSymbol + " " + activity.title + " (waiting)")
+            let waitingLine = dimmed(waitingSymbol + " " + activity.title + " (waiting)", theme: theme)
 
             return .init(title: waitingLine, tail: [])
         }
 
-        let tail = activity.outputLines.suffix(visibleOutputLineCount).map { TerminalStyle.apply(TerminalStyle.dim, to: outputIndent + $0) }
+        let tail = activity.outputLines.suffix(visibleOutputLineCount).map { dimmed(outputIndent + $0, theme: theme) }
 
-        return .init(title: frame + " " + makeTitle(for: activity, barColor: barColor), tail: tail)
+        return .init(title: frame + " " + makeTitle(for: activity, barColor: theme?.progressBar), tail: tail)
     }
 
     static func makeTitle(for activity: RunningActivity, barColor: TerminalColor?) -> String {

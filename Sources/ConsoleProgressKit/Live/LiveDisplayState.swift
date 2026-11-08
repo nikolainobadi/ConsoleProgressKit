@@ -15,7 +15,7 @@ import Foundation
 ///
 /// Once stopped, the display makes no further changes, so these methods assume the state is running.
 struct LiveDisplayState {
-    private let theme: ProgressTheme
+    private let theme: ProgressTheme?
     private var activities: [RunningActivity] = []
     private var heldLines: [String] = []
     private var frameIndex = 0
@@ -25,7 +25,8 @@ struct LiveDisplayState {
     private(set) var isStopped = false
     private(set) var timer: (any DispatchSourceTimer)?
 
-    init(theme: ProgressTheme) {
+    /// Creates the state. A `nil` theme draws everything without color or dimming.
+    init(theme: ProgressTheme?) {
         self.theme = theme
     }
 }

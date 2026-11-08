@@ -192,6 +192,40 @@ extension LiveDisplayStateTests {
     }
 }
 
+// MARK: - No Color
+extension LiveDisplayStateTests {
+    @Test
+    func `A succeeded activity's symbol has no color when color is off`() {
+        let sut = makeSUT(theme: nil)
+        let id = UUID()
+
+        let transition = sut
+            .starting(id: id, title: "Build").state
+            .finishing(id: id, succeeded: true, elapsed: .seconds(1))
+
+        #expect(transition.output.contains("✓ Build (1.0s)"))
+    }
+
+    @Test
+    func `A failed activity's symbol has no color when color is off`() {
+        let sut = makeSUT(theme: nil)
+        let id = UUID()
+
+        let transition = sut
+            .starting(id: id, title: "Build").state
+            .finishing(id: id, succeeded: false, elapsed: .seconds(1))
+
+        #expect(transition.output.contains("✗ Build (1.0s)"))
+    }
+
+    @Test
+    func `A warning note's symbol has no color when color is off`() {
+        let sut = makeSUT(theme: nil)
+
+        #expect(sut.noting("Disk almost full", style: .warning).output == "! Disk almost full\n")
+    }
+}
+
 // MARK: - Stopping
 extension LiveDisplayStateTests {
     @Test
@@ -211,7 +245,7 @@ extension LiveDisplayStateTests {
 
 // MARK: - SUT
 private extension LiveDisplayStateTests {
-    func makeSUT(theme: ProgressTheme) -> LiveDisplayState {
+    func makeSUT(theme: ProgressTheme?) -> LiveDisplayState {
         return LiveDisplayState(theme: theme)
     }
 }

@@ -45,6 +45,12 @@ open Package.swift
 - Writes activity starts, updates, and outcomes without animation or escape codes
 - Suitable for pipes, logs, and non-interactive callers
 
+**Text styling** (`Sources/ConsoleProgressKit/Styling/`)
+- `TextStyle` describes how text looks; `TextStyler` applies it through `AnsiTextStyler` or `PlainTextStyler`
+- `TerminalCapabilities.supportsColor(on:)` decides whether a `TerminalStream` gets styling, and `textStyler(for:)` picks the matching styler
+- Numeric escape codes live only in `TerminalStyle` and `TerminalColor`
+- `TaggingTextStyler` (`ConsoleProgressTesting`) tags text with style names for tests
+
 **MockProgressDisplay** (`Sources/ConsoleProgressTesting/MockProgressDisplay.swift`)
 - Ships in the separate `ConsoleProgressTesting` product, which re-exports `ConsoleProgressKit`
 - Writes nothing; records activities (title, `RecordedUpdate`s, `RecordedOutcome`), notes, written output, suspensions, and terminal restoration

@@ -1,6 +1,6 @@
 # ConsoleProgressKit API
 
-Shows what a long-running Swift command is doing. `ProgressDisplay` and its two displays — `LiveProgressDisplay` for interactive terminals, `PlainProgressDisplay` for pipes, logs, and CI — plus how a running activity reports what it is doing (`ActivityHandle`), how notes are marked (`NoteStyle`), how to choose the live display's colors (`ProgressTheme`, `TerminalColor`), and how to tell whether stderr is a terminal (`TerminalCapabilities`, `TerminalSize`).
+Shows what a long-running Swift command is doing. `ProgressDisplay` and its two displays — `LiveProgressDisplay` for interactive terminals, `PlainProgressDisplay` for pipes, logs, and CI — plus how a running activity reports what it is doing (`ActivityHandle`), how notes are marked (`NoteStyle`), how to choose the live display's colors (`ProgressTheme`, `TerminalColor`), how to tell what a stream supports (`TerminalCapabilities`, `TerminalStream`, `TerminalSize`), and how to style a command's final output (`TextStyle`, `TextStyler`, `AnsiTextStyler`, `PlainTextStyler`).
 
 ## Contents
 
@@ -13,7 +13,12 @@ Shows what a long-running Swift command is doing. `ProgressDisplay` and its two 
 - Struct: ProgressTheme
 - Enum: TerminalColor
 - Enum: TerminalCapabilities
+- Enum: TerminalStream
 - Struct: TerminalSize
+- Struct: TextStyle
+- Protocol: TextStyler
+- Struct: AnsiTextStyler
+- Struct: PlainTextStyler
 - Best Practices
 
 ---
@@ -87,7 +92,8 @@ do {
 | `suspended(_:)` | Erases the region, shows the cursor, holds finished lines and notes until resume | Just runs `body` |
 | `writeOutput(_:)` | Erases the region on stderr, writes to stdout; region returns on the next tick | Writes to stdout |
 | `restoreTerminal()` | Erases, shows cursor, writes `ESC[0m`, cancels timer, then silent forever | Silent forever |
-| Escape codes and colors | Always on; colors come from its `ProgressTheme` | Never; takes no theme |
+| Colors and dimming | From its `ProgressTheme`, unless `supportsColor(on: .standardError)` is false | Never; takes no theme |
+| Cursor and erase escape codes | Always written | Never |
 
 Neither display picks itself. The caller chooses, usually with `TerminalCapabilities.standardErrorIsTerminal`.
 <!-- /type:ProgressDisplay -->
@@ -107,7 +113,7 @@ extension LiveProgressDisplay: ProgressDisplay
 | Initializer | Description |
 |-------------|-------------|
 | `init()` | Creates a display that uses `ProgressTheme.standard`, with nothing on screen. The redraw timer starts with the first activity. |
-| `init(theme: ProgressTheme)` | Creates a display that uses `theme`'s colors for its whole lifetime. A theme can't be changed after creation or set per activity. |
+| `init(theme: ProgressTheme)` | Creates a display that uses `theme`'s colors for its whole lifetime. A theme can't be changed after creation or set per activity. Color support is read once, here: when `TerminalCapabilities.supportsColor(on: .standardError)` is false, the display draws without colors or dimming. |
 
 ### Methods
 
@@ -349,6 +355,10 @@ let display = LiveProgressDisplay(theme: theme)
 
 - Titles, detail text, info notes, the bar's empty cells, and its `c/t` count stay in the default foreground color.
 - Waiting lines, output tails, and `… and N more` stay dim.
+
+### When a Theme Is Ignored
+
+From `0.8.0`, a theme applies only when `TerminalCapabilities.supportsColor(on: .standardError)` is true. Under `NO_COLOR`, `TERM=dumb`, or a redirected stderr, the live display draws no colors and no dimming, even with an explicit theme.
 <!-- /type:ProgressTheme -->
 
 <!-- type:TerminalColor -->
@@ -379,11 +389,20 @@ public enum TerminalColor: Sendable
 <!-- type:TerminalCapabilities -->
 ## Enum: TerminalCapabilities
 
-A caseless namespace for what the terminal attached to stderr supports.
+A caseless namespace for what the attached terminal supports.
 
 ```swift
 public enum TerminalCapabilities
 ```
+
+### Methods
+
+Both require ConsoleProgressKit `0.8.0` or later.
+
+| Method | Returns | Description |
+|--------|---------|-------------|
+| `supportsColor(on stream: TerminalStream)` | `Bool` | Static. True only when `stream` is a terminal, `NO_COLOR` is unset or empty, and `TERM` isn't `dumb`. The answer covers all styling, so bold, dim, and underline are off whenever color is. |
+| `textStyler(for stream: TerminalStream)` | `any TextStyler` | Static. `AnsiTextStyler` when `supportsColor(on: stream)` is true, otherwise `PlainTextStyler`. |
 
 ### Properties
 
@@ -408,8 +427,28 @@ func makeDisplay() -> any ProgressDisplay {
 
 - `standardErrorIsTerminal` is `isatty(STDERR_FILENO) == 1`, read fresh on each access.
 - `standardErrorSize` asks the terminal with `ioctl(TIOCGWINSZ)` on each access, and is `nil` when that fails or reports zero columns or rows.
-- The displays never check `standardErrorIsTerminal` themselves; the caller decides. `LiveProgressDisplay` reads `standardErrorSize` on every draw to fit its region.
+- Neither display picks itself; the caller chooses live or plain. `LiveProgressDisplay` checks `supportsColor(on: .standardError)` once when it is created, to decide whether to draw colors and dimming, and reads `standardErrorSize` on every draw to fit its region.
+- No API reports a dumb terminal. `TERM=dumb` turns color off, but the live display still writes cursor codes, so callers who need to support one should check `TERM` themselves and use `PlainProgressDisplay`.
 <!-- /type:TerminalCapabilities -->
+
+<!-- type:TerminalStream -->
+## Enum: TerminalStream
+
+Requires ConsoleProgressKit `0.8.0` or later.
+
+A standard stream to ask terminal questions about. Progress and results can be redirected separately, so the answer depends on the stream.
+
+```swift
+public enum TerminalStream: Sendable
+```
+
+### Cases
+
+| Case | Associated Values | Description |
+|------|-------------------|-------------|
+| `standardOutput` | — | Where a command's results go. |
+| `standardError` | — | Where progress and notes go. |
+<!-- /type:TerminalStream -->
 
 <!-- type:TerminalSize -->
 ## Struct: TerminalSize
@@ -438,13 +477,122 @@ if let size = TerminalCapabilities.standardErrorSize {
 Its initializer is not public; values come from `TerminalCapabilities.standardErrorSize`.
 <!-- /type:TerminalSize -->
 
+<!-- type:TextStyle -->
+## Struct: TextStyle
+
+Requires ConsoleProgressKit `0.8.0` or later.
+
+How a piece of text looks.
+
+```swift
+public struct TextStyle: Sendable, Equatable
+```
+
+### Initialization
+
+| Initializer | Description |
+|-------------|-------------|
+| `init(name: String, color: TerminalColor?, isBold: Bool, isDim: Bool, isUnderlined: Bool)` | Creates a style. `name` identifies it in `TaggingTextStyler` output, so give each style a distinct name. |
+
+### Standard Styles
+
+Static properties.
+
+| Style | Look |
+|-------|------|
+| `title` | bold cyan |
+| `heading` | bold |
+| `added` | green |
+| `deleted` | red |
+| `muted` | dim |
+| `standout` | bold magenta |
+| `success` | bold green |
+| `warning` | bold yellow |
+| `failure` | bold red |
+| `command` | bold |
+| `url` | underline |
+
+### Usage Example
+
+```swift
+extension TextStyle {
+    static let ticketID = TextStyle(name: "ticketID", color: .yellow, isBold: false, isDim: false, isUnderlined: false)
+}
+
+let styler = TerminalCapabilities.textStyler(for: .standardOutput)
+display.writeOutput(styler.styled("PROJ-42", as: .ticketID))
+```
+<!-- /type:TextStyle -->
+
+<!-- type:TextStyler -->
+## Protocol: TextStyler
+
+Requires ConsoleProgressKit `0.8.0` or later.
+
+A type that applies a `TextStyle` to text.
+
+```swift
+public protocol TextStyler: Sendable
+```
+
+### Methods
+
+| Method | Returns | Description |
+|--------|---------|-------------|
+| `styled(_ text: String, as style: TextStyle)` | `String` | Returns `text` in `style`. |
+| `successLine(_ text: String)` | `String` | Extension. `✅`, a space, and `text` in `.success`. |
+| `warningLine(_ text: String)` | `String` | Extension. `⚠️`, a space, and `text` in `.warning`. |
+| `failureLine(_ text: String)` | `String` | Extension. `❌`, a space, and `text` in `.failure`. |
+
+### Styles Don't Nest
+
+Every span ends with a full reset, so text after an inner span loses the outer style, and the inner span picks up any outer bold. Style adjacent pieces separately and join the results. Nesting isn't detected at runtime.
+
+```swift
+let line = styler.styled("Ticket ", as: .heading) + styler.styled("PROJ-42", as: .standout)
+```
+<!-- /type:TextStyler -->
+
+<!-- type:AnsiTextStyler -->
+## Struct: AnsiTextStyler
+
+Requires ConsoleProgressKit `0.8.0` or later.
+
+Wraps text in one escape sequence and a reset, whatever the output stream supports. Codes are joined with `;` in a fixed order: bold, dim, underline, color. Empty text, and text in a style with no attributes, is returned unchanged. Prefer `TerminalCapabilities.textStyler(for:)`, which respects the user's terminal and settings.
+
+```swift
+public struct AnsiTextStyler: TextStyler
+```
+
+| Initializer | Description |
+|-------------|-------------|
+| `init()` | Creates a styler. |
+<!-- /type:AnsiTextStyler -->
+
+<!-- type:PlainTextStyler -->
+## Struct: PlainTextStyler
+
+Requires ConsoleProgressKit `0.8.0` or later.
+
+Returns text unchanged.
+
+```swift
+public struct PlainTextStyler: TextStyler
+```
+
+| Initializer | Description |
+|-------------|-------------|
+| `init()` | Creates a styler. |
+<!-- /type:PlainTextStyler -->
+
 ---
 
 ## Best Practices
 
 - **Depend on `any ProgressDisplay`** — Pass the protocol into the code that does the work, and construct `LiveProgressDisplay` or `PlainProgressDisplay` once, at the entry point.
-- **Choose the display from the terminal** — Use `LiveProgressDisplay` only when `TerminalCapabilities.standardErrorIsTerminal` is true (and the session is interactive); otherwise use `PlainProgressDisplay`. The live display always writes escape codes, even into a file.
+- **Choose the display from the terminal** — Use `LiveProgressDisplay` only when `TerminalCapabilities.standardErrorIsTerminal` is true (and the session is interactive); otherwise use `PlainProgressDisplay`. The live display drops colors when stderr isn't a terminal, but it still writes cursor and erase codes, even into a file.
 - **Choose colors when creating the live display** — Pass a `ProgressTheme` to `LiveProgressDisplay(theme:)`. `ProgressDisplay` has no color API, so code that takes `any ProgressDisplay` doesn't need to change, and `PlainProgressDisplay` and `MockProgressDisplay` take no theme.
+- **Choose the styler for the stream the text goes to** — `textStyler(for: .standardOutput)` for `writeOutput(_:)` and `textStyler(for: .standardError)` for `note(_:style:)`; the two can differ when one is redirected.
 - **Write results with `writeOutput(_:)`, not `print`** — `print` writes over the live region; `writeOutput` erases it first and keeps progress on stderr and results on stdout.
 - **Wrap every prompt in `suspended(_:)`** — Otherwise the live region is redrawn over the prompt. It costs nothing with the plain display.
 - **Call `restoreTerminal()` on early exit** — Register it as a Ctrl-C cleanup so the cursor is shown and colors are reset. A normal finish restores the cursor on its own.

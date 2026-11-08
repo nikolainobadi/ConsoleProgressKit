@@ -74,6 +74,9 @@ struct ProgressDemo: NnRootCommand {
         case .interruptDuringPrompt:
             registerInterruptCleanups(display: display)
             try await runPromptWithChildProcess(display: display, picker: Self.contextFactory.makePicker())
+        case .styledReport:
+            try await display.track("Preparing the release report", operation: { _ in try await Task.sleep(for: .seconds(1)) })
+            Self.writeStyledReport(display: display, styler: TerminalCapabilities.textStyler(for: .standardOutput))
         }
     }
 }
@@ -97,6 +100,25 @@ private extension ProgressDemo {
         }
 
         return PlainProgressDisplay()
+    }
+
+    static func writeStyledReport(display: any ProgressDisplay, styler: any TextStyler) {
+        let lines = [
+            styler.styled("Release 1.3.0", as: .title),
+            "Ticket: " + styler.styled("PROJ-42", as: .ticketID),
+            styler.styled("Changes", as: .heading),
+            styler.styled("+ Add styled reports", as: .added),
+            styler.styled("- Remove local escape codes", as: .deleted),
+            styler.styled("Built from main", as: .muted),
+            "Run " + styler.styled("swift test", as: .command) + " to check it",
+            styler.styled("https://github.com/example/project/releases/tag/1.3.0", as: .url),
+            styler.styled("Worth a look", as: .standout),
+            styler.successLine("Published"),
+            styler.warningLine("One doc is out of date"),
+            styler.failureLine("Homebrew formula not updated")
+        ]
+
+        lines.forEach { display.writeOutput($0) }
     }
 
     static func simulateWork(display: any ProgressDisplay, noteAfter delay: Duration, note: String, style: NoteStyle, remaining: Duration) async throws {
@@ -361,6 +383,10 @@ private extension ProgressDemo {
 }
 
 // MARK: - Dependencies
+private extension TextStyle {
+    static let ticketID = TextStyle(name: "ticketID", color: .yellow, isBold: false, isDim: false, isUnderlined: false)
+}
+
 actor SimulatedSlots {
     private var freeCount: Int
     private var waiters: [CheckedContinuation<Void, Never>] = []
@@ -426,6 +452,7 @@ enum ProgressDemoScenario: String, CaseIterable, ExpressibleByArgument {
     case manySteps = "many-steps"
     case interrupt = "interrupt"
     case interruptDuringPrompt = "interrupt-during-prompt"
+    case styledReport = "styled-report"
 }
 
 // MARK: - DisplayablePickerItem
@@ -468,6 +495,8 @@ extension ProgressDemoScenario: DisplayablePickerItem {
             return "Ctrl-C while real child processes run"
         case .interruptDuringPrompt:
             return "Ctrl-C during a prompt while a child process runs"
+        case .styledReport:
+            return "Styled report written to stdout after a step"
         }
     }
 }
