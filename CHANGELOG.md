@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.8.0] - 2026-11-08
+
 ### Added
 - Add `TerminalCapabilities.supportsColor(on:)` and `TerminalStream` to check whether stdout or stderr should receive styled text
 - Add `TextStyle` with 11 standard styles, and `TextStyler` with `AnsiTextStyler` and `PlainTextStyler`, to style a command's final output; get the right styler from `TerminalCapabilities.textStyler(for:)`
@@ -58,7 +60,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add `ConsoleColor` with green, yellow, blue, magenta, and cyan options
 - Require Swift 6.0
 
-[Unreleased]: https://github.com/nikolainobadi/ConsoleProgressKit/compare/0.7.0...HEAD
+[Unreleased]: https://github.com/nikolainobadi/ConsoleProgressKit/compare/0.8.0...HEAD
+[0.8.0]: https://github.com/nikolainobadi/ConsoleProgressKit/compare/0.7.0...0.8.0
 [0.7.0]: https://github.com/nikolainobadi/ConsoleProgressKit/compare/0.6.0...0.7.0
 [0.6.0]: https://github.com/nikolainobadi/ConsoleProgressKit/compare/0.5.0...0.6.0
 [0.5.0]: https://github.com/nikolainobadi/ConsoleProgressKit/compare/v0.4.0...v0.5.0

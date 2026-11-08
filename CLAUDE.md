@@ -48,6 +48,8 @@ open Package.swift
 **Text styling** (`Sources/ConsoleProgressKit/Styling/`)
 - `TextStyle` describes how text looks; `TextStyler` applies it through `AnsiTextStyler` or `PlainTextStyler`
 - `TerminalCapabilities.supportsColor(on:)` decides whether a `TerminalStream` gets styling, and `textStyler(for:)` picks the matching styler
+- Choose `.standardOutput` for `writeOutput(_:)` text and `.standardError` for `note(_:style:)` text; styling is disabled for non-terminal streams, non-empty `NO_COLOR`, or `TERM=dumb`, including bold, dim, and underline
+- `AnsiTextStyler()` applies ANSI styling without checking terminal capabilities; styled spans do not nest, so style adjacent pieces separately and join them
 - Numeric escape codes live only in `TerminalStyle` and `TerminalColor`
 - `TaggingTextStyler` (`ConsoleProgressTesting`) tags text with style names for tests
 
@@ -65,7 +67,7 @@ open Package.swift
 
 3. **Public API Surface**:
    - `LiveProgressDisplay()` / `PlainProgressDisplay()` - Create a display
-   - `LiveProgressDisplay(theme:)` - Create a live display with a `ProgressTheme` of `TerminalColor` values for its spinner, progress bar, and ✓/✗/`!` symbols
+   - `LiveProgressDisplay(theme:)` - Create a live display with a `ProgressTheme` of `TerminalColor` values for its spinner, progress bar, and ✓/✗/`!` symbols; colors and dimming are omitted when stderr does not support styling, while animation remains live
    - `track(_:operation:)` - Run an async operation with an `ActivityHandle`, report its outcome and elapsed time, return its value, and rethrow its errors
    - `note(_:style:)` - Print a note
    - `restoreTerminal()` - Permanently stop live/plain display output; subsequent tracked operations still execute. The mock records the call without stopping recording
@@ -76,7 +78,7 @@ open Package.swift
 - Swift 6.2+ required (see Package.swift)
 - Platform: macOS 15+ (see Package.swift)
 - `ConsoleProgressKitTests` uses Swift Testing in `Tests/ConsoleProgressKitTests/`, with coverage for live state transitions and shared formatting helpers
-- `ConsoleProgressTestingTests` covers `MockProgressDisplay` in `Tests/ConsoleProgressTestingTests/`
+- `ConsoleProgressTestingTests` covers `MockProgressDisplay` and `TaggingTextStyler` in `Tests/ConsoleProgressTestingTests/`
 - `ConsoleProgressTesting` depends on `package` access (`ActivityHandle.init(send:)`, `ActivityUpdate`); keep those `package`, not `public`
 - Both library targets enable `NonisolatedNonsendingByDefault` to preserve caller isolation for async operations
 - The root package exports the library; `Demo/` is a separate package with the `progress-demo` executable and its own external dependencies
