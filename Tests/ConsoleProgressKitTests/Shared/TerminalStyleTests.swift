@@ -32,6 +32,23 @@ struct TerminalStyleTests {
     }
 }
 
+// MARK: - Escape Sequences
+extension TerminalStyleTests {
+    @Test
+    func `The dim sequence turns on dimming`() {
+        let sut = makeSUT()
+
+        #expect(sut.dim == "\u{1B}[2m")
+    }
+
+    @Test
+    func `Several codes are joined into one sequence`() {
+        let sut = makeSUT()
+
+        #expect(sut.sgr([1, 36]) == "\u{1B}[1;36m")
+    }
+}
+
 // MARK: - SUT
 private extension TerminalStyleTests {
     func makeSUT() -> TerminalStyle.Type {

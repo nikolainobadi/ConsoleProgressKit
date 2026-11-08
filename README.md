@@ -15,6 +15,8 @@ ConsoleProgressKit is a lightweight Swift Package Manager library providing acti
 - **Concurrent activities** with individual details, waiting states, and output tails
 - **Automatic outcomes** showing success or failure and elapsed time
 - **Custom colors** for the live display's spinner, progress bars, and status symbols
+- **Honors `NO_COLOR`** and turns off color and dimming on dumb terminals and redirected streams
+- **Styled command output** with standard and custom text styles
 - **Plain output** without animation or escape codes for logs and pipes
 - **Separate output streams** - progress on stderr and command results on stdout
 - **Zero dependencies** - pure Swift implementation
@@ -116,6 +118,37 @@ Pass `nil` for `spinner` or `progressBar` to use the terminal's default foregrou
 
 A theme colors the spinner, the progress bar's filled cells, and the `✓`, `✗`, and `!` symbols. Titles, details, and info notes keep the default foreground color, and waiting lines and output tails stay dim. `PlainProgressDisplay` and `MockProgressDisplay` don't take a theme.
 
+The live display leaves out colors and dimming, even with an explicit theme, when `NO_COLOR` is set to a non-empty value, `TERM` is `dumb`, or stderr isn't a terminal.
+
+### Styling Text
+
+Style a command's final output with the same rules. `TerminalCapabilities.textStyler(for:)` returns a styler that writes escape codes when the stream supports color and plain text when it doesn't. Choose the stream the text goes to: `.standardOutput` for `writeOutput(_:)` and `.standardError` for `note(_:style:)`.
+
+```swift
+let styler = TerminalCapabilities.textStyler(for: .standardOutput)
+
+display.writeOutput(styler.styled("Release 1.3.0", as: .title))
+display.writeOutput(styler.successLine("Published"))
+```
+
+The standard styles are `title`, `heading`, `added`, `deleted`, `muted`, `standout`, `success`, `warning`, `failure`, `command`, and `url`. `successLine(_:)`, `warningLine(_:)`, and `failureLine(_:)` add an emoji outside the styled text.
+
+Add your own styles in a `TextStyle` extension, and call them the same way:
+
+```swift
+extension TextStyle {
+    static let ticketID = TextStyle(name: "ticketID", color: .yellow, isBold: false, isDim: false, isUnderlined: false)
+}
+
+display.writeOutput(styler.styled("PROJ-42", as: .ticketID))
+```
+
+Styles don't nest, because every span ends with a full reset. Style adjacent pieces separately and join the results:
+
+```swift
+let line = styler.styled("Ticket ", as: .heading) + styler.styled("PROJ-42", as: .ticketID)
+```
+
 ## Testing
 
 The `ConsoleProgressTesting` product provides `MockProgressDisplay`, a display that writes nothing and records what your code reported. Add it to a test target:
@@ -150,6 +183,8 @@ try await Uploader(display: display).upload(["a.zip", "b.zip"])
 
 The mock also records notes, `writeOutput(_:)` text, prompt suspensions, and whether `restoreTerminal()` was called.
 
+To check styled text, inject `TaggingTextStyler`, which wraps text as `<name>text</name>`, and compare the full message.
+
 ## Architecture
 
 ### Core Components
@@ -163,12 +198,16 @@ The mock also records notes, `writeOutput(_:)` text, prompt suspensions, and whe
 - Passed to each operation by `track`
 
 **TerminalCapabilities**
-- Reports whether stderr is a terminal and its available dimensions
-- Lets callers select the appropriate display
+- Reports whether stderr is a terminal, its available dimensions, and whether a stream supports color
+- Lets callers select the appropriate display and text styler
 
 **ProgressTheme**
 - Holds the `TerminalColor` values `LiveProgressDisplay` uses for its spinner, progress bars, and status symbols
 - Set when the display is created
+
+**TextStyle and TextStyler**
+- `TextStyle` describes how text looks; `TextStyler` applies it
+- `AnsiTextStyler` writes escape codes and `PlainTextStyler` returns text unchanged
 
 ### Terminal Output Management
 

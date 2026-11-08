@@ -40,8 +40,11 @@ public final class LiveProgressDisplay: Sendable {
     }
 
     /// Creates a display that draws its spinner, progress bars, and status symbols in `theme`'s colors.
+    ///
+    /// Colors and dimming are left out when stderr doesn't support them. See
+    /// ``TerminalCapabilities/supportsColor(on:)``.
     public init(theme: ProgressTheme) {
-        state = Mutex(LiveDisplayState(theme: theme))
+        state = Mutex(LiveDisplayState(theme: TerminalCapabilities.supportsColor(on: .standardError) ? theme : nil))
     }
 }
 

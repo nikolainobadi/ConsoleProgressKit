@@ -21,6 +21,7 @@ Requires ConsoleProgressKit `0.6.0` or later.
 - Enum: RecordedUpdate
 - Enum: RecordedOutcome
 - Struct: RecordedNote
+- Struct: TaggingTextStyler
 - Complete Example
 - Best Practices
 
@@ -179,6 +180,31 @@ public struct RecordedNote: Sendable, Equatable
 | `text` | `String` | The note's text. |
 | `style` | `NoteStyle` | `.info` or `.warning`. |
 <!-- /type:RecordedNote -->
+
+---
+
+<!-- type:TaggingTextStyler -->
+## Struct: TaggingTextStyler
+
+Requires ConsoleProgressKit `0.8.0` or later.
+
+A `TextStyler` for tests that wraps text as `<name>text</name>`, using the style's `name`. Comparing a full tagged message checks that each piece got the right style and that no span sits inside another. Give custom styles distinct names.
+
+```swift
+public struct TaggingTextStyler: TextStyler
+```
+
+| Initializer | Description |
+|-------------|-------------|
+| `init()` | Creates a styler. |
+
+```swift
+let styler = TaggingTextStyler()
+
+#expect(styler.styled("Build", as: .title) == "<title>Build</title>")
+#expect(styler.successLine("Done") == "✅ <success>Done</success>")
+```
+<!-- /type:TaggingTextStyler -->
 
 ---
 

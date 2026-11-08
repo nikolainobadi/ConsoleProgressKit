@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Add `TerminalCapabilities.supportsColor(on:)` and `TerminalStream` to check whether stdout or stderr should receive styled text
+- Add `TextStyle` with 11 standard styles, and `TextStyler` with `AnsiTextStyler` and `PlainTextStyler`, to style a command's final output; get the right styler from `TerminalCapabilities.textStyler(for:)`
+- Add `successLine(_:)`, `warningLine(_:)`, and `failureLine(_:)` on `TextStyler`
+- Add `TaggingTextStyler` to `ConsoleProgressTesting` for asserting on styled text
+
+### Changed
+- `LiveProgressDisplay` no longer draws colors or dimming when `NO_COLOR` is set to a non-empty value, `TERM` is `dumb`, or stderr isn't a terminal, even with an explicit `ProgressTheme`
+
 ## [0.7.0] - 2026-11-03
 
 ### Added

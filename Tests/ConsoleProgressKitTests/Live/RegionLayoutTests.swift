@@ -178,6 +178,53 @@ extension RegionLayoutTests {
     }
 }
 
+// MARK: - No Color
+extension RegionLayoutTests {
+    @Test
+    func `A spinner has no color when color is off`() {
+        let sut = makeSUT()
+        let activities = [makeActivity(title: "Build", updates: [])]
+
+        #expect(sut.lines(for: activities, frameIndex: 0, size: nil, theme: nil) == ["⠋ Build"])
+    }
+
+    @Test
+    func `A progress bar has no color when color is off`() {
+        let sut = makeSUT()
+        let activities = [makeActivity(title: "Build", updates: [.progress(completed: 2, total: 4)])]
+
+        #expect(sut.lines(for: activities, frameIndex: 0, size: nil, theme: nil) == ["⠋ Build ██████████░░░░░░░░░░ 2/4"])
+    }
+
+    @Test
+    func `A waiting activity is not dimmed when color is off`() {
+        let sut = makeSUT()
+        let activities = [makeActivity(title: "Build", updates: [.waiting(true)])]
+
+        #expect(sut.lines(for: activities, frameIndex: 0, size: nil, theme: nil) == ["◦ Build (waiting)"])
+    }
+
+    @Test
+    func `Output lines are not dimmed when color is off`() {
+        let sut = makeSUT()
+        let activities = [makeActivity(title: "Build", updates: [.output("line 1")])]
+
+        #expect(sut.lines(for: activities, frameIndex: 0, size: nil, theme: nil) == ["⠋ Build", "    line 1"])
+    }
+
+    @Test
+    func `The count of collapsed activities is not dimmed when color is off`() {
+        let sut = makeSUT()
+        let activities = [
+            makeActivity(title: "Build", updates: []),
+            makeActivity(title: "Test", updates: []),
+            makeActivity(title: "Lint", updates: [])
+        ]
+
+        #expect(sut.lines(for: activities, frameIndex: 0, size: TerminalSize(width: 80, height: 3), theme: nil) == ["⠋ Build", "… and 2 more"])
+    }
+}
+
 // MARK: - SUT
 private extension RegionLayoutTests {
     func makeSUT() -> RegionLayout.Type {
