@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Add `TerminalCapabilities.size(for:)` to read the terminal size of stdout or stderr; `standardErrorSize` is now the same as `size(for: .standardError)`
+
 ## [0.8.0] - 2026-11-08
 
 ### Added

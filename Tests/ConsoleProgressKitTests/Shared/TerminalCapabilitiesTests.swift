@@ -62,6 +62,26 @@ extension TerminalCapabilitiesTests {
     }
 }
 
+// MARK: - Reading the Size
+extension TerminalCapabilitiesTests {
+    @Test(arguments: [(0, 24), (80, 0)])
+    func `Size is unavailable when the terminal reports zero columns or rows`(columns: Int, rows: Int) {
+        let sut = makeSUT()
+
+        #expect(sut.size(columns: columns, rows: rows) == nil)
+    }
+
+    @Test
+    func `Size reports the terminal's columns as width and rows as height`() throws {
+        let sut = makeSUT()
+
+        let size = try #require(sut.size(columns: 80, rows: 24))
+
+        #expect(size.width == 80)
+        #expect(size.height == 24)
+    }
+}
+
 // MARK: - SUT
 private extension TerminalCapabilitiesTests {
     func makeSUT() -> TerminalCapabilities.Type {

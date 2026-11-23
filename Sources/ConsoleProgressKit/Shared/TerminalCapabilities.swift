@@ -14,14 +14,25 @@ public enum TerminalCapabilities {
     }
 
     /// The size of the terminal stderr is attached to, or `nil` when it can't be read.
+    ///
+    /// The same as `size(for: .standardError)`.
     public static var standardErrorSize: TerminalSize? {
+        return size(for: .standardError)
+    }
+
+    /// The size of the terminal `stream` is attached to, or `nil` when it can't be read.
+    ///
+    /// Read fresh on each call. `nil` when the stream isn't a terminal, the size can't be read, or the
+    /// terminal reports zero columns or rows. Choose the stream the text goes to: stdout can be piped
+    /// while stderr is still a terminal.
+    public static func size(for stream: TerminalStream) -> TerminalSize? {
         var size = winsize()
 
-        guard ioctl(STDERR_FILENO, TIOCGWINSZ, &size) == 0, size.ws_col > 0, size.ws_row > 0 else {
+        guard ioctl(stream.fileDescriptor, TIOCGWINSZ, &size) == 0 else {
             return nil
         }
 
-        return .init(width: Int(size.ws_col), height: Int(size.ws_row))
+        return self.size(columns: Int(size.ws_col), rows: Int(size.ws_row))
     }
 
     /// Whether styled text should be written to `stream`.
@@ -47,6 +58,14 @@ extension TerminalCapabilities {
         let noColor = environment["NO_COLOR"] ?? ""
 
         return isTerminal && noColor.isEmpty && environment["TERM"] != "dumb"
+    }
+
+    static func size(columns: Int, rows: Int) -> TerminalSize? {
+        guard columns > 0, rows > 0 else {
+            return nil
+        }
+
+        return .init(width: columns, height: rows)
     }
 
     static func textStyler(supportsColor: Bool) -> any TextStyler {

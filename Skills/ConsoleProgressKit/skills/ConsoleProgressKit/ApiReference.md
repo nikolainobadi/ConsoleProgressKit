@@ -397,19 +397,20 @@ public enum TerminalCapabilities
 
 ### Methods
 
-Both require ConsoleProgressKit `0.8.0` or later.
+`supportsColor(on:)` and `textStyler(for:)` require ConsoleProgressKit `0.8.0` or later; `size(for:)` requires `0.9.0` or later.
 
 | Method | Returns | Description |
 |--------|---------|-------------|
 | `supportsColor(on stream: TerminalStream)` | `Bool` | Static. True only when `stream` is a terminal, `NO_COLOR` is unset or empty, and `TERM` isn't `dumb`. The answer covers all styling, so bold, dim, and underline are off whenever color is. |
 | `textStyler(for stream: TerminalStream)` | `any TextStyler` | Static. `AnsiTextStyler` when `supportsColor(on: stream)` is true, otherwise `PlainTextStyler`. |
+| `size(for stream: TerminalStream)` | `TerminalSize?` | Static. The size of the terminal `stream` is attached to, or `nil` when it can't be read. 0.9.0 or later. |
 
 ### Properties
 
 | Property | Type | Description |
 |----------|------|-------------|
 | `standardErrorIsTerminal` | `Bool` | Whether stderr is attached to a terminal, rather than a pipe or a file. Static. |
-| `standardErrorSize` | `TerminalSize?` | The size of the terminal stderr is attached to, or `nil` when it can't be read. Static. |
+| `standardErrorSize` | `TerminalSize?` | The size of the terminal stderr is attached to, or `nil` when it can't be read. The same as `size(for: .standardError)`. Static. |
 
 ### Usage Example
 
@@ -426,7 +427,8 @@ func makeDisplay() -> any ProgressDisplay {
 ### Behavior
 
 - `standardErrorIsTerminal` is `isatty(STDERR_FILENO) == 1`, read fresh on each access.
-- `standardErrorSize` asks the terminal with `ioctl(TIOCGWINSZ)` on each access, and is `nil` when that fails or reports zero columns or rows.
+- `size(for:)` asks the terminal with `ioctl(TIOCGWINSZ)` on the stream's file descriptor on each call, and is `nil` when the stream isn't a terminal, the call fails, or the terminal reports zero columns or rows. `standardErrorSize` is the same as `size(for: .standardError)`.
+- To fit a command's final output to the screen, use `size(for: .standardOutput)`, not `standardErrorSize`: stdout can be piped (`tool | less`) while stderr is still a terminal.
 - Neither display picks itself; the caller chooses live or plain. `LiveProgressDisplay` checks `supportsColor(on: .standardError)` once when it is created, to decide whether to draw colors and dimming, and reads `standardErrorSize` on every draw to fit its region.
 - No API reports a dumb terminal. `TERM=dumb` turns color off, but the live display still writes cursor codes, so callers who need to support one should check `TERM` themselves and use `PlainProgressDisplay`.
 <!-- /type:TerminalCapabilities -->
@@ -469,12 +471,12 @@ public struct TerminalSize: Sendable
 ### Usage Example
 
 ```swift
-if let size = TerminalCapabilities.standardErrorSize {
+if let size = TerminalCapabilities.size(for: .standardOutput) {
     let separator = String(repeating: "─", count: size.width)
 }
 ```
 
-Its initializer is not public; values come from `TerminalCapabilities.standardErrorSize`.
+Its initializer is not public; values come from `TerminalCapabilities.size(for:)` (0.9.0+) and `TerminalCapabilities.standardErrorSize`.
 <!-- /type:TerminalSize -->
 
 <!-- type:TextStyle -->
@@ -593,6 +595,7 @@ public struct PlainTextStyler: TextStyler
 - **Choose the display from the terminal** — Use `LiveProgressDisplay` only when `TerminalCapabilities.standardErrorIsTerminal` is true (and the session is interactive); otherwise use `PlainProgressDisplay`. The live display drops colors when stderr isn't a terminal, but it still writes cursor and erase codes, even into a file.
 - **Choose colors when creating the live display** — Pass a `ProgressTheme` to `LiveProgressDisplay(theme:)`. `ProgressDisplay` has no color API, so code that takes `any ProgressDisplay` doesn't need to change, and `PlainProgressDisplay` and `MockProgressDisplay` take no theme.
 - **Choose the styler for the stream the text goes to** — `textStyler(for: .standardOutput)` for `writeOutput(_:)` and `textStyler(for: .standardError)` for `note(_:style:)`; the two can differ when one is redirected.
+- **Read the size of the stream the text goes to** — `size(for: .standardOutput)` to fit `writeOutput(_:)` text and `size(for: .standardError)` for progress and notes; stdout is `nil` when piped even when stderr is a terminal.
 - **Write results with `writeOutput(_:)`, not `print`** — `print` writes over the live region; `writeOutput` erases it first and keeps progress on stderr and results on stdout.
 - **Wrap every prompt in `suspended(_:)`** — Otherwise the live region is redrawn over the prompt. It costs nothing with the plain display.
 - **Call `restoreTerminal()` on early exit** — Register it as a Ctrl-C cleanup so the cursor is shown and colors are reset. A normal finish restores the cursor on its own.
@@ -604,4 +607,4 @@ public struct PlainTextStyler: TextStyler
 - **Report progress with the final count** — Call `progress(completed: total, total: total)` at the end, or the live bar stops one step short.
 - **Pair `markWaiting()` with `markRunning()`** — In the live display, a waiting activity hides its spinner, detail, progress, and output tail until it is marked running again. The plain display continues printing updates while waiting.
 - **Check `standardErrorIsTerminal`, not stdout** — Progress is drawn on stderr, so stdout being piped doesn't mean the live display is wrong.
-- **Expect `standardErrorSize` to be `nil` in CI** — It needs a real terminal; code that uses it must handle `nil`.
+- **Expect `size(for:)` and `standardErrorSize` to be `nil` in CI** — They need a real terminal; code that uses them must handle `nil`.

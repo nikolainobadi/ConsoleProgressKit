@@ -48,6 +48,7 @@ open Package.swift
 **Text styling** (`Sources/ConsoleProgressKit/Styling/`)
 - `TextStyle` describes how text looks; `TextStyler` applies it through `AnsiTextStyler` or `PlainTextStyler`
 - `TerminalCapabilities.supportsColor(on:)` decides whether a `TerminalStream` gets styling, and `textStyler(for:)` picks the matching styler
+- `TerminalCapabilities.size(for:)` reads a `TerminalStream`'s terminal size, `nil` when it isn't a terminal; `standardErrorSize` wraps `size(for: .standardError)`
 - Choose `.standardOutput` for `writeOutput(_:)` text and `.standardError` for `note(_:style:)` text; styling is disabled for non-terminal streams, non-empty `NO_COLOR`, or `TERM=dumb`, including bold, dim, and underline
 - `AnsiTextStyler()` applies ANSI styling without checking terminal capabilities; styled spans do not nest, so style adjacent pieces separately and join them
 - Numeric escape codes live only in `TerminalStyle` and `TerminalColor`

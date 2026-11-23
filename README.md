@@ -131,6 +131,16 @@ display.writeOutput(styler.styled("Release 1.3.0", as: .title))
 display.writeOutput(styler.successLine("Published"))
 ```
 
+To fit final output to the screen, read the width of the stream the text goes to. `TerminalCapabilities.size(for:)` returns `nil` when the stream isn't a terminal, so stdout piped into `less` or a file has no width even while stderr still shows progress.
+
+```swift
+let width = TerminalCapabilities.size(for: .standardOutput)?.width
+
+if let width {
+    display.writeOutput(String(repeating: "─", count: width))
+}
+```
+
 The standard styles are `title`, `heading`, `added`, `deleted`, `muted`, `standout`, `success`, `warning`, `failure`, `command`, and `url`. `successLine(_:)`, `warningLine(_:)`, and `failureLine(_:)` add an emoji outside the styled text.
 
 Add your own styles in a `TextStyle` extension, and call them the same way:

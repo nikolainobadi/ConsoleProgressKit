@@ -21,12 +21,16 @@ public enum TerminalStream: Sendable {
 
 // MARK: - Terminal Detection
 extension TerminalStream {
-    var isTerminal: Bool {
+    var fileDescriptor: Int32 {
         switch self {
         case .standardOutput:
-            return isatty(STDOUT_FILENO) == 1
+            return STDOUT_FILENO
         case .standardError:
-            return isatty(STDERR_FILENO) == 1
+            return STDERR_FILENO
         }
+    }
+
+    var isTerminal: Bool {
+        return isatty(fileDescriptor) == 1
     }
 }
