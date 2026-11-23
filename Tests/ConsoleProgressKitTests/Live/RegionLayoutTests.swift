@@ -1,10 +1,3 @@
-//
-//  RegionLayoutTests.swift
-//  ConsoleProgressKitTests
-//
-//  Created by Nikolai Nobadi on 10/17/26.
-//
-
 import Testing
 import Foundation
 @testable import ConsoleProgressKit

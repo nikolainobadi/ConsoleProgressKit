@@ -1,10 +1,3 @@
-//
-//  TerminalStyleTests.swift
-//  ConsoleProgressKitTests
-//
-//  Created by Nikolai Nobadi on 11/3/26.
-//
-
 import Testing
 @testable import ConsoleProgressKit
 

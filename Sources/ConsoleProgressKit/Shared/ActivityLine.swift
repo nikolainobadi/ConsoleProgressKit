@@ -1,10 +1,3 @@
-//
-//  ActivityLine.swift
-//  ConsoleProgressKit
-//
-//  Created by Nikolai Nobadi on 10/16/26.
-//
-
 import Foundation
 
 enum ActivityLine {

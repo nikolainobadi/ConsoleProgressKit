@@ -1,10 +1,3 @@
-//
-//  LineFitter.swift
-//  ConsoleProgressKit
-//
-//  Created by Nikolai Nobadi on 10/16/26.
-//
-
 enum LineFitter {
     /// Cuts `line` so its visible characters fit in `width` columns, ending it with `…` when cut.
     ///

@@ -1,10 +1,3 @@
-//
-//  ProgressDisplay.swift
-//  ConsoleProgressKit
-//
-//  Created by Nikolai Nobadi on 10/16/26.
-//
-
 /// Shows the user what a long-running command is doing.
 ///
 /// Progress is written to stderr so a command's results on stdout stay clean for pipes.

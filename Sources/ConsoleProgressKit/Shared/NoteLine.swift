@@ -1,10 +1,3 @@
-//
-//  NoteLine.swift
-//  ConsoleProgressKit
-//
-//  Created by Nikolai Nobadi on 10/16/26.
-//
-
 enum NoteLine {
     /// Makes the line for a note, with its symbol uncolored when `theme` is `nil`.
     static func make(text: String, style: NoteStyle, theme: ProgressTheme?) -> String {

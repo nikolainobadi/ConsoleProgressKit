@@ -1,10 +1,3 @@
-//
-//  TextStyler.swift
-//  ConsoleProgressKit
-//
-//  Created by Nikolai Nobadi on 11/8/26.
-//
-
 /// A type that applies a ``TextStyle`` to text.
 ///
 /// Styles don't nest. Every styled span ends with a full reset, so text after an inner span loses

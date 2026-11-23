@@ -1,10 +1,3 @@
-//
-//  MockProgressDisplayTests.swift
-//  ConsoleProgressTestingTests
-//
-//  Created by Nikolai Nobadi on 10/21/26.
-//
-
 import Testing
 @testable import ConsoleProgressTesting
 

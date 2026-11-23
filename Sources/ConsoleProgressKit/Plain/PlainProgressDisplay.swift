@@ -1,10 +1,3 @@
-//
-//  PlainProgressDisplay.swift
-//  ConsoleProgressKit
-//
-//  Created by Nikolai Nobadi on 10/16/26.
-//
-
 import Synchronization
 
 /// Writes one line when an activity starts, one per detail update, and one when it finishes, with

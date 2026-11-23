@@ -1,10 +1,3 @@
-//
-//  TimedActivity.swift
-//  ConsoleProgressKit
-//
-//  Created by Nikolai Nobadi on 10/16/26.
-//
-
 enum TimedActivity {
     /// Runs `operation`, then calls `finish` with whether it succeeded and how long it took.
     ///

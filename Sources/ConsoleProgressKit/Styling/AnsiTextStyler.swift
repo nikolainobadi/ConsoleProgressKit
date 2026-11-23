@@ -1,10 +1,3 @@
-//
-//  AnsiTextStyler.swift
-//  ConsoleProgressKit
-//
-//  Created by Nikolai Nobadi on 11/8/26.
-//
-
 /// Styles text with ANSI escape codes, whatever the output stream supports.
 ///
 /// Use ``TerminalCapabilities/textStyler(for:)`` to respect the user's terminal and settings. Empty

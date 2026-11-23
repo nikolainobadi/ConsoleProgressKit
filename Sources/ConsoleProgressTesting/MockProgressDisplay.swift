@@ -1,10 +1,3 @@
-//
-//  MockProgressDisplay.swift
-//  ConsoleProgressTesting
-//
-//  Created by Nikolai Nobadi on 10/21/26.
-//
-
 import Synchronization
 
 /// A ``ProgressDisplay`` for tests that writes nothing and records everything it is asked to show.

@@ -1,10 +1,3 @@
-//
-//  RecordedActivity.swift
-//  ConsoleProgressTesting
-//
-//  Created by Nikolai Nobadi on 10/21/26.
-//
-
 /// One `track(_:operation:)` call recorded by ``MockProgressDisplay``.
 public struct RecordedActivity: Sendable, Equatable {
     public let title: String

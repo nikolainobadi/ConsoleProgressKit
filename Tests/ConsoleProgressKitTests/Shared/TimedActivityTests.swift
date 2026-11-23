@@ -1,10 +1,3 @@
-//
-//  TimedActivityTests.swift
-//  ConsoleProgressKitTests
-//
-//  Created by Nikolai Nobadi on 10/17/26.
-//
-
 import Testing
 @testable import ConsoleProgressKit
 

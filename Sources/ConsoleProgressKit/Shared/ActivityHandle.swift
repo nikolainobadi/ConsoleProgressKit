@@ -1,10 +1,3 @@
-//
-//  ActivityHandle.swift
-//  ConsoleProgressKit
-//
-//  Created by Nikolai Nobadi on 10/16/26.
-//
-
 /// Lets a running activity report what it is doing right now.
 public struct ActivityHandle: Sendable {
     private let send: @Sendable (ActivityUpdate) -> Void

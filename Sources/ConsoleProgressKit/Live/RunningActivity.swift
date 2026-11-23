@@ -1,10 +1,3 @@
-//
-//  RunningActivity.swift
-//  ConsoleProgressKit
-//
-//  Created by Nikolai Nobadi on 10/16/26.
-//
-
 import Foundation
 
 /// An activity the live display is showing, with everything it has reported so far.

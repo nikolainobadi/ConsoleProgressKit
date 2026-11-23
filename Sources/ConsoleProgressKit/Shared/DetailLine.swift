@@ -1,10 +1,3 @@
-//
-//  DetailLine.swift
-//  ConsoleProgressKit
-//
-//  Created by Nikolai Nobadi on 10/16/26.
-//
-
 enum DetailLine {
     static func make(title: String, detail: String?) -> String {
         guard let detail else {

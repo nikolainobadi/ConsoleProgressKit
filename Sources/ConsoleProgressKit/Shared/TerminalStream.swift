@@ -1,10 +1,3 @@
-//
-//  TerminalStream.swift
-//  ConsoleProgressKit
-//
-//  Created by Nikolai Nobadi on 11/8/26.
-//
-
 import Foundation
 
 /// A standard stream a caller can ask terminal questions about.

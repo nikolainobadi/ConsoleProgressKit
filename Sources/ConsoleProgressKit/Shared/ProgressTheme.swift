@@ -1,10 +1,3 @@
-//
-//  ProgressTheme.swift
-//  ConsoleProgressKit
-//
-//  Created by Nikolai Nobadi on 11/3/26.
-//
-
 /// The colors `LiveProgressDisplay` uses for its spinner, progress bar, and status symbols.
 public struct ProgressTheme: Sendable {
     /// The color of the spinner, or `nil` for the terminal's default foreground color.
