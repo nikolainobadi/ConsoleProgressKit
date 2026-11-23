@@ -1,6 +1,6 @@
 # ConsoleProgressKit
 
-![Swift](https://img.shields.io/badge/Swift-6.2+-orange.svg)
+![Swift](https://img.shields.io/badge/Swift-6.4+-orange.svg)
 ![Platform](https://img.shields.io/badge/Platform-macOS-blueviolet.svg)
 ![SPM](https://img.shields.io/badge/SPM-compatible-brightgreen.svg)
 ![License](https://img.shields.io/badge/License-MIT-lightgrey.svg)
@@ -25,7 +25,7 @@ ConsoleProgressKit is a lightweight Swift Package Manager library providing acti
 
 ## Requirements
 
-- Swift 6.2+
+- Swift 6.4+
 - macOS 15+ (the live display requires terminal ANSI support)
 
 ## Installation

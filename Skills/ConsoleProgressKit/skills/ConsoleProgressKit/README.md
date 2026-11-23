@@ -1,6 +1,6 @@
 # ConsoleProgressKit API Reference Skill
 
-Claude Code skill that gives the agent an API reference for [ConsoleProgressKit](https://github.com/nikolainobadi/ConsoleProgressKit) (macOS 15+, Swift 6.2+), so it writes code against the real signatures and behavior instead of guessing.
+Claude Code skill that gives the agent an API reference for [ConsoleProgressKit](https://github.com/nikolainobadi/ConsoleProgressKit) (macOS 15+, Swift 6.4+), so it writes code against the real signatures and behavior instead of guessing.
 
 ## Install
 

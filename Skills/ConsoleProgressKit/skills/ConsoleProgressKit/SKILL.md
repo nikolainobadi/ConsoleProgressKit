@@ -9,7 +9,7 @@ Shows what a long-running Swift command is doing: animated spinner lines on an i
 
 **Dependency:** `.package(url: "https://github.com/nikolainobadi/ConsoleProgressKit", from: "0.9.0")`
 **Products:** `ConsoleProgressKit` (production), `ConsoleProgressTesting` (test helpers, 0.6.0+)
-**Platforms:** macOS 15+ | **Swift:** 6.2+
+**Platforms:** macOS 15+ | **Swift:** 6.4+
 <!-- package_path: /Users/nelixpro/Desktop/ConsoleProgressKit -->
 
 ## Context Files

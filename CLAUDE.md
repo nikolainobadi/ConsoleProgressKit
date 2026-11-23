@@ -76,7 +76,7 @@ open Package.swift
 
 ## Development Notes
 
-- Swift 6.2+ required (see Package.swift)
+- Swift 6.4+ required (see Package.swift)
 - Platform: macOS 15+ (see Package.swift)
 - `ConsoleProgressKitTests` uses Swift Testing in `Tests/ConsoleProgressKitTests/`, with coverage for live state transitions and shared formatting helpers
 - `ConsoleProgressTestingTests` covers `MockProgressDisplay` and `TaggingTextStyler` in `Tests/ConsoleProgressTestingTests/`
