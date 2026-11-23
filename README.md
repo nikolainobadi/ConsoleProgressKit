@@ -1,6 +1,6 @@
 # ConsoleProgressKit
 
-![Swift](https://img.shields.io/badge/Swift-6.2+-orange.svg)
+![Swift](https://img.shields.io/badge/Swift-6.4+-orange.svg)
 ![Platform](https://img.shields.io/badge/Platform-macOS-blueviolet.svg)
 ![SPM](https://img.shields.io/badge/SPM-compatible-brightgreen.svg)
 ![License](https://img.shields.io/badge/License-MIT-lightgrey.svg)
@@ -25,7 +25,7 @@ ConsoleProgressKit is a lightweight Swift Package Manager library providing acti
 
 ## Requirements
 
-- Swift 6.2+
+- Swift 6.4+
 - macOS 15+ (the live display requires terminal ANSI support)
 
 ## Installation
@@ -129,6 +129,16 @@ let styler = TerminalCapabilities.textStyler(for: .standardOutput)
 
 display.writeOutput(styler.styled("Release 1.3.0", as: .title))
 display.writeOutput(styler.successLine("Published"))
+```
+
+To fit final output to the screen, read the width of the stream the text goes to. `TerminalCapabilities.size(for:)` returns `nil` when the stream isn't a terminal, so stdout piped into `less` or a file has no width even while stderr still shows progress.
+
+```swift
+let width = TerminalCapabilities.size(for: .standardOutput)?.width
+
+if let width {
+    display.writeOutput(String(repeating: "─", count: width))
+}
 ```
 
 The standard styles are `title`, `heading`, `added`, `deleted`, `muted`, `standout`, `success`, `warning`, `failure`, `command`, and `url`. `successLine(_:)`, `warningLine(_:)`, and `failureLine(_:)` add an emoji outside the styled text.

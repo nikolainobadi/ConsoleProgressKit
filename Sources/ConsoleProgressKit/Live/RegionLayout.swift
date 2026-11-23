@@ -1,10 +1,3 @@
-//
-//  RegionLayout.swift
-//  ConsoleProgressKit
-//
-//  Created by Nikolai Nobadi on 10/16/26.
-//
-
 /// Lays out the live region's lines for the running activities, fitted to the terminal.
 ///
 /// Lines are cut to the terminal's width. When the region would be taller than the terminal,

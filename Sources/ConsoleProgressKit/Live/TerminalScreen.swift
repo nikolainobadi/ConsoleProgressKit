@@ -1,10 +1,3 @@
-//
-//  TerminalScreen.swift
-//  ConsoleProgressKit
-//
-//  Created by Nikolai Nobadi on 10/16/26.
-//
-
 /// What the live display last put on screen, so the next redraw can replace it in place.
 struct TerminalScreen {
     let renderedLineCount: Int

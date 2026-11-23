@@ -7,9 +7,9 @@ description: ConsoleProgressKit Swift API reference for showing progress in comm
 
 Shows what a long-running Swift command is doing: animated spinner lines on an interactive terminal, or plain one-line-per-event output for pipes and CI, always on stderr so stdout stays clean.
 
-**Dependency:** `.package(url: "https://github.com/nikolainobadi/ConsoleProgressKit", from: "0.8.0")`
+**Dependency:** `.package(url: "https://github.com/nikolainobadi/ConsoleProgressKit", from: "0.9.0")`
 **Products:** `ConsoleProgressKit` (production), `ConsoleProgressTesting` (test helpers, 0.6.0+)
-**Platforms:** macOS 15+ | **Swift:** 6.2+
+**Platforms:** macOS 15+ | **Swift:** 6.4+
 <!-- package_path: /Users/nelixpro/Desktop/ConsoleProgressKit -->
 
 ## Context Files
@@ -30,6 +30,7 @@ If a listed file cannot be read, say so and do not guess signatures, parameter l
 - **Colors (0.7.0+):** use `LiveProgressDisplay(theme:)` with a `ProgressTheme` to choose the spinner, progress bar, and ✓/✗/`!` colors from the 16 `TerminalColor` values.
 - **Color settings (0.8.0+):** the live display drops colors and dimming under `NO_COLOR`, `TERM=dumb`, or a redirected stderr, even with an explicit theme.
 - **Style final output (0.8.0+):** get a styler from `TerminalCapabilities.textStyler(for: .standardOutput)` and call `styled(_:as:)`; styles don't nest.
+- **Fit final output to the screen (0.9.0+):** `TerminalCapabilities.size(for: .standardOutput)?.width`, `nil` when piped.
 - **Track work:** `try await display.track("Title") { activity in ... }` shows the activity, then `✓`/`✗` with elapsed time, and returns or rethrows the operation's result.
 - **Report from inside:** `activity.update(detail:)`, `output(line:)`, `progress(completed:total:)`, `markWaiting()`, `markRunning()`.
 - **Keep the screen intact:** results go through `writeOutput(_:)`, prompts go inside `suspended { }`, and `restoreTerminal()` runs on Ctrl-C.
@@ -46,4 +47,5 @@ If a listed file cannot be read, say so and do not guess signatures, parameter l
 - "Show build log lines under the running step" -> Loads `ApiReference.md` (`output(line:)`)
 - "Make my CLI's spinner cyan" -> Loads `ApiReference.md` (`ProgressTheme`, `LiveProgressDisplay(theme:)`)
 - "Color my CLI's final report" -> Loads `ApiReference.md` (`TextStyle`, `TextStyler`, `TerminalCapabilities.textStyler(for:)`)
+- "Wrap or truncate my CLI's output to the terminal width" -> Loads `ApiReference.md` (`TerminalCapabilities.size(for:)`, `TerminalSize`)
 - "How do I test that my command reports upload progress?" -> Loads `TestingReference.md` (`MockProgressDisplay`, `RecordedActivity`)

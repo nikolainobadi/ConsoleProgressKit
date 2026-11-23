@@ -1,10 +1,3 @@
-//
-//  LiveDisplayState.swift
-//  ConsoleProgressKit
-//
-//  Created by Nikolai Nobadi on 10/16/26.
-//
-
 import Foundation
 
 /// Everything `LiveProgressDisplay` changes while it runs, and the text each change draws.

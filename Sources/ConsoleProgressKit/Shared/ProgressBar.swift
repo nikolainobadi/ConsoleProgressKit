@@ -1,10 +1,3 @@
-//
-//  ProgressBar.swift
-//  ConsoleProgressKit
-//
-//  Created by Nikolai Nobadi on 10/16/26.
-//
-
 enum ProgressBar {
     /// Makes the bar and its count. `fillColor` colors the filled cells only.
     static func make(completed: Int, total: Int, fillColor: TerminalColor?) -> String {

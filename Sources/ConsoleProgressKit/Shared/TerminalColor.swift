@@ -1,10 +1,3 @@
-//
-//  TerminalColor.swift
-//  ConsoleProgressKit
-//
-//  Created by Nikolai Nobadi on 11/3/26.
-//
-
 /// One of the 16 named ANSI colors.
 ///
 /// The exact shade of each color comes from the user's terminal palette.

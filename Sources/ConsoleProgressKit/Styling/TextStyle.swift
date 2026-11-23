@@ -1,10 +1,3 @@
-//
-//  TextStyle.swift
-//  ConsoleProgressKit
-//
-//  Created by Nikolai Nobadi on 11/8/26.
-//
-
 /// How a piece of text looks.
 ///
 /// Add styles of your own in a `TextStyle` extension, so call sites read the same as they do for

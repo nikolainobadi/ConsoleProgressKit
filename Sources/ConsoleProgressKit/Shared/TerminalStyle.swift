@@ -1,10 +1,3 @@
-//
-//  TerminalStyle.swift
-//  ConsoleProgressKit
-//
-//  Created by Nikolai Nobadi on 10/16/26.
-//
-
 enum TerminalStyle {
     static let boldCode = 1
     static let dimCode = 2

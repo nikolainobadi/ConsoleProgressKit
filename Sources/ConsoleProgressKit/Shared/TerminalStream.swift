@@ -1,10 +1,3 @@
-//
-//  TerminalStream.swift
-//  ConsoleProgressKit
-//
-//  Created by Nikolai Nobadi on 11/8/26.
-//
-
 import Foundation
 
 /// A standard stream a caller can ask terminal questions about.
@@ -21,12 +14,16 @@ public enum TerminalStream: Sendable {
 
 // MARK: - Terminal Detection
 extension TerminalStream {
-    var isTerminal: Bool {
+    var fileDescriptor: Int32 {
         switch self {
         case .standardOutput:
-            return isatty(STDOUT_FILENO) == 1
+            return STDOUT_FILENO
         case .standardError:
-            return isatty(STDERR_FILENO) == 1
+            return STDERR_FILENO
         }
+    }
+
+    var isTerminal: Bool {
+        return isatty(fileDescriptor) == 1
     }
 }
