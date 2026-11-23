@@ -7,8 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.9.0] - 2026-11-23
+
 ### Added
 - Add `TerminalCapabilities.size(for:)` to read the terminal size of stdout or stderr; `standardErrorSize` is now the same as `size(for: .standardError)`
+
+### Changed
+- Require Swift 6.4 or later; upgrade the toolchain before adopting this release (breaking)
 
 ## [0.8.0] - 2026-11-08
 
@@ -63,7 +68,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add `ConsoleColor` with green, yellow, blue, magenta, and cyan options
 - Require Swift 6.0
 
-[Unreleased]: https://github.com/nikolainobadi/ConsoleProgressKit/compare/0.8.0...HEAD
+[Unreleased]: https://github.com/nikolainobadi/ConsoleProgressKit/compare/0.9.0...HEAD
+[0.9.0]: https://github.com/nikolainobadi/ConsoleProgressKit/compare/0.8.0...0.9.0
 [0.8.0]: https://github.com/nikolainobadi/ConsoleProgressKit/compare/0.7.0...0.8.0
 [0.7.0]: https://github.com/nikolainobadi/ConsoleProgressKit/compare/0.6.0...0.7.0
 [0.6.0]: https://github.com/nikolainobadi/ConsoleProgressKit/compare/0.5.0...0.6.0

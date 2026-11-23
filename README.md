@@ -35,7 +35,7 @@ ConsoleProgressKit is a lightweight Swift Package Manager library providing acti
 Add the package to your `Package.swift`:
 
 ```swift
-.package(url: "https://github.com/nikolainobadi/ConsoleProgressKit", from: "0.8.0")
+.package(url: "https://github.com/nikolainobadi/ConsoleProgressKit", from: "0.9.0")
 ```
 
 Then include it in your target:
@@ -208,7 +208,7 @@ To check styled text, inject `TaggingTextStyler`, which wraps text as `<name>tex
 - Passed to each operation by `track`
 
 **TerminalCapabilities**
-- Reports whether stderr is a terminal, its available dimensions, and whether a stream supports color
+- Reports whether stderr is a terminal, the available dimensions for stdout or stderr, and whether a stream supports color
 - Lets callers select the appropriate display and text styler
 
 **ProgressTheme**
