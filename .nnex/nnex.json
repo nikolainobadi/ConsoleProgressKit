@@ -7,7 +7,7 @@
       ],
       "name" : "ConsoleProgressKit",
       "path" : ".",
-      "skill" : "Skills/ConsoleProgressKit",
+      "skill" : "Skills/console-progress-kit",
       "targetType" : "library"
     }
   ]

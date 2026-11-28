@@ -1,5 +1,5 @@
 ---
-name: ConsoleProgressKit
+name: console-progress-kit
 description: ConsoleProgressKit Swift API reference for showing progress in command-line tools — live spinners, progress bars, and plain log lines on stderr. USE WHEN using ConsoleProgressKit, ProgressDisplay, LiveProgressDisplay, PlainProgressDisplay, ActivityHandle, track(_:operation:), NoteStyle, ProgressTheme, TerminalColor, TerminalCapabilities, TerminalStream, TextStyle, TextStyler, AnsiTextStyler, PlainTextStyler, ConsoleProgressTesting, MockProgressDisplay, RecordedActivity, TaggingTextStyler, OR adding spinners, progress bars, or progress output to a Swift CLI, OR choosing spinner, progress bar, or status symbol colors, OR coloring or styling a Swift CLI's final output, OR honoring NO_COLOR, OR testing code that reports progress through a ProgressDisplay.
 ---
 

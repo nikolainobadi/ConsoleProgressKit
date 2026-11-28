@@ -86,7 +86,7 @@ open Package.swift
 
 ## Claude Code Skill
 
-The API reference skill for this package lives here, in `Skills/ConsoleProgressKit/`, and is served by the public `nn-swift-skills` marketplace as `ConsoleProgressKit@nn-swift-skills`. It was moved out of `NobadiScripts` so the API and its documentation change together: **any PR that changes the public API must update `Skills/ConsoleProgressKit/` in the same PR.**
+The API reference skill for this package lives here, in `Skills/console-progress-kit/`, and is served by the public `nn-swift-skills` marketplace as `console-progress-kit@nn-skills-marketplace`. It was moved out of `NobadiScripts` so the API and its documentation change together: **any PR that changes the public API must update `Skills/console-progress-kit/` in the same PR.**
 
 - `Skills/` is not a SwiftPM target; it ships only through the marketplace.
 

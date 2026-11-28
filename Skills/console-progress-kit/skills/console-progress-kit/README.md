@@ -4,13 +4,13 @@ Claude Code skill that gives the agent an API reference for [ConsoleProgressKit]
 
 ## Install
 
-    claude plugin install ConsoleProgressKit@nn-swift-skills --scope project
+    claude plugin install console-progress-kit@nn-skills-marketplace --scope project
 
 ## Use
 
 The skill loads automatically when a task involves ConsoleProgressKit types. You can also invoke it directly:
 
-    /ConsoleProgressKit how do I show a progress bar while my command uploads files?
+    /console-progress-kit:console-progress-kit how do I show a progress bar while my command uploads files?
 
 ## Files
 
@@ -22,4 +22,4 @@ The skill loads automatically when a task involves ConsoleProgressKit types. You
 
 ## Maintenance
 
-This skill lives in the ConsoleProgressKit repo under `Skills/ConsoleProgressKit`, so an API change and its documentation land in the same PR. The `nn-swift-skills` marketplace pins it to a release tag, so edits reach users when the package is tagged, not when they merge.
+This skill lives in the ConsoleProgressKit repo under `Skills/console-progress-kit`, so an API change and its documentation land in the same PR. The `nn-swift-skills` marketplace pins it to a release tag, so edits reach users when the package is tagged, not when they merge.
