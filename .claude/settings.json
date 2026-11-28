@@ -1,6 +1,6 @@
 {
   "enabledPlugins": {
     "nn-testing@nn-private-skills-marketplace": true,
-    "ConsoleProgressKit@nn-swift-skills": true
+    "console-progress-kit@nn-skills-marketplace": true
   }
 }
